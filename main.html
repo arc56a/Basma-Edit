@@ -561,7 +561,7 @@
         <div class="phrase-strip" id="home-phrase-strip">
             <div class="phrase-strip-inner">
                 <div class="phrase-chip">
-                    <span id="home-phrase-text">اليوم بصمتك هي الفرق البسيط بين فكرة عادية وتجربة لا تُنسى.</span>
+                    <span id="home-phrase-text"></span>
                     <span class="icon-heart">❤</span>
                     <div class="floating-decor">
                         <span class="heart1">❤</span>
@@ -573,16 +573,12 @@
             </div>
         </div>
 
-        <!-- سلايدر الصور والفيديو (صورة فقط داخل الكرت) -->
+        <!-- سلايدر الصور والفيديو - سيتم تعبئته لاحقًا من البيانات الحقيقية -->
         <div class="media-slider" id="mainMediaSlider">
-            <div class="media-slider-content">
-                <img src="https://png.pngtree.com/thumb_back/fh260/background/20230516/pngtree-wolfs-full-hd-wallpaper-art-wallpaper-1920x1080-1080p-image_2571308.jpg" alt="صورة تجريبية من السلايدر">
-            </div>
+            <div class="media-slider-content"></div>
         </div>
 
-        <div class="media-slider-footer">
-            صورة تجريبية لسلايدر الرئيسية
-        </div>
+        <div class="media-slider-footer"></div>
 
         <div class="music-player" id="music-player">
             <div class="cover-container">
@@ -634,11 +630,13 @@
         const homePhraseStrip = document.getElementById('home-phrase-strip');
         const homePhraseText = document.getElementById('home-phrase-text');
         const mainMediaSlider = document.getElementById('mainMediaSlider');
+        const mediaSliderContent = document.querySelector('#mainMediaSlider .media-slider-content');
+        const mediaSliderFooter = document.querySelector('.media-slider-footer');
 
         const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
         const APPWRITE_PROJECT_ID = 'basmaedit56';
         const APPWRITE_DATABASE_ID = '693b73ab003790d00cf3';
-        const MAIN_SETTINGS_COLLECTION_ID = 'main_settings';
+        const MAIN_SECTION_COLLECTION_ID = 'main_section';
 
         let appwriteClient = null;
         let appwriteDatabases = null;
@@ -673,34 +671,75 @@
             try {
                 const response = await appwriteDatabases.listDocuments(
                     APPWRITE_DATABASE_ID,
-                    MAIN_SETTINGS_COLLECTION_ID
+                    MAIN_SECTION_COLLECTION_ID
                 );
 
                 if (response.total > 0) {
                     const doc = response.documents[0];
 
-                    // التحكم في زر مشغل الموسيقى في الرئيسية
+                    // زر مشغل الموسيقى
                     if (openPlayerBtn && openPlayerBtn.parentElement) {
-                        const musicEnabled = typeof doc.musicEnabled === 'boolean' ? doc.musicEnabled : true;
-                        openPlayerBtn.parentElement.style.display = musicEnabled ? 'flex' : 'none';
+                        const musicVisible = typeof doc.music_button_visible === 'boolean' ? doc.music_button_visible : true;
+                        openPlayerBtn.parentElement.style.display = musicVisible ? 'flex' : 'none';
                     }
 
-                    // التحكم في السلايدر الرئيسي (صور / فيديو) في الرئيسية
+                    // بطاقات / شريط العبارات
+                    if (homePhraseStrip) {
+                        const phrasesVisible = typeof doc.phrases_cards_visible === 'boolean' ? doc.phrases_cards_visible : true;
+                        homePhraseStrip.style.display = phrasesVisible ? 'block' : 'none';
+                    }
+
+                    // السلايدر والصورة/الفيديو والعنوان مأخوذة من نفس السجل
                     if (mainMediaSlider) {
-                        const sliderEnabled = typeof doc.homeSliderEnabled === 'boolean' ? doc.homeSliderEnabled : true;
-                        mainMediaSlider.style.display = sliderEnabled ? 'block' : 'none';
+                        const sliderVisible = typeof doc.media_slider_visible === 'boolean' ? doc.media_slider_visible : true;
+                        mainMediaSlider.style.display = sliderVisible ? 'block' : 'none';
+                        if (mediaSliderFooter) {
+                            mediaSliderFooter.style.display = sliderVisible ? 'block' : 'none';
+                        }
+
+                        if (sliderVisible && mediaSliderContent) {
+                            const url = typeof doc.media_url === 'string' ? doc.media_url : '';
+                            const title = typeof doc.title === 'string' ? doc.title : '';
+                            const mediaType = typeof doc.media_type === 'string' ? doc.media_type : 'image';
+                            const itemVisible = typeof doc.visible === 'boolean' ? doc.visible : true;
+
+                            mediaSliderContent.innerHTML = '';
+
+                            if (itemVisible && url) {
+                                if (mediaType === 'video') {
+                                    const videoEl = document.createElement('video');
+                                    videoEl.src = url;
+                                    videoEl.controls = true;
+                                    videoEl.style.width = '100%';
+                                    videoEl.style.display = 'block';
+                                    mediaSliderContent.appendChild(videoEl);
+                                } else {
+                                    const imgEl = document.createElement('img');
+                                    imgEl.src = url;
+                                    imgEl.alt = title || 'صورة من السلايدر';
+                                    mediaSliderContent.appendChild(imgEl);
+                                }
+                            }
+
+                            if (mediaSliderFooter) {
+                                mediaSliderFooter.textContent = title || 'عنصر سلايدر رئيسية';
+                            }
+                        }
                     }
                 } else {
-                    // في حال عدم وجود إعدادات، نظهر كليهما بشكل افتراضي
+                    // في حال عدم وجود إعدادات، نظهر كل شيء افتراضيًا
                     if (openPlayerBtn && openPlayerBtn.parentElement) {
                         openPlayerBtn.parentElement.style.display = 'flex';
+                    }
+                    if (homePhraseStrip) {
+                        homePhraseStrip.style.display = 'block';
                     }
                     if (mainMediaSlider) {
                         mainMediaSlider.style.display = 'block';
                     }
                 }
             } catch (error) {
-                console.error('خطأ أثناء قراءة main_settings في الرئيسية:', error);
+                console.error('خطأ أثناء قراءة main_section في الرئيسية:', error);
             }
         }
 
@@ -709,11 +748,7 @@
         let songIndex = 0;
         let isPlaying = false;
         let loopMode = 'one';
-        const homePhrases = [
-            'اليوم بصمتك هي الفرق البسيط بين فكرة عادية وتجربة لا تُنسى.',
-            'كل تعديل صغير في التصميم هو خطوة نحو واجهة تشبه شخصيتك.',
-            'لا تنتظر الإلهام؛ ابدأ بالتجربة، والإلهام سيلحق بك.'
-        ];
+        const homePhrases = [];
         let homePhraseIndex = 0;
 
         function loadSong(song) {
