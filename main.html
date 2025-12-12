@@ -294,6 +294,8 @@
             margin: 0 auto;
             border-radius: 14px;
             overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            box-shadow: 0 0 18px rgba(0, 255, 255, 0.3);
         }
 
         .media-slider-content img {
@@ -686,7 +688,7 @@
                     // بطاقات / شريط العبارات
                     if (homePhraseStrip) {
                         const phrasesVisible = typeof doc.phrases_cards_visible === 'boolean' ? doc.phrases_cards_visible : true;
-                        homePhraseStrip.style.display = phrasesVisible ? 'block' : 'none';
+                        homePhraseStrip.style.display = phrasesVisible ? 'flex' : 'none';
                     }
 
                     // السلايدر والصورة/الفيديو والعنوان مأخوذة من نفس السجل
