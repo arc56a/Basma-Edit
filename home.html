@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بصمة - الرئيسية</title>
+    <style>
+        :root {
+            --neon-blue: #0ff;
+            --neon-pink: #ff2a6d;
+            --dark-bg: #050814;
+            --grid-color: rgba(0, 255, 255, 0.08);
+            --fire-gradient: linear-gradient(0deg, #ff2a00, #ff8c00, #ff2a00);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+            -webkit-touch-callout: none;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        button,
+        a {
+            outline: none;
+        }
+
+        button:focus,
+        button:active,
+        a:focus {
+            outline: none;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: 'Tajawal', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: #f5f5f5;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* خلفية سايبر بنك فاير على كامل الشاشة */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+        }
+
+        /* شبكة سايبر */
+        body::before {
+            background:
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 22s linear infinite;
+        }
+
+        /* لهب ناعم في الأسفل */
+        body::after {
+            background: radial-gradient(circle at 50% 120%, var(--fire-gradient) 0%, transparent 60%);
+            filter: blur(18px);
+            opacity: 0.55;
+            animation: firePulse 4s ease-in-out infinite alternate;
+        }
+
+        .app {
+            min-height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px 14px 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            position: sticky;
+            top: 56px;
+            z-index: 5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            border-radius: 14px;
+            background: rgba(5, 10, 30, 0.85);
+            border: 1px solid rgba(0, 255, 255, 0.35);
+            box-shadow: 0 0 18px rgba(0, 255, 255, 0.3);
+            margin: 0 0 8px;
+            text-align: center;
+        }
+
+        .logo {
+            position: relative;
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-size: 1.1rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+            z-index: 1;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -10px;
+            width: 32px;
+            height: 32px;
+            background: url('images/fingerprint.png') center/contain no-repeat;
+            opacity: 0.25;
+            filter: invert(1) brightness(1.3);
+            pointer-events: none;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        nav button {
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            border-radius: 999px;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            background: rgba(5, 15, 35, 0.8);
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav button:hover {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: 0 0 12px rgba(255, 42, 109, 0.7);
+        }
+
+        nav button.active {
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+            color: #050814;
+            font-weight: 600;
+            box-shadow: 0 0 18px rgba(0, 255, 255, 0.8), 0 0 28px rgba(255, 42, 109, 0.7);
+        }
+
+        nav button.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -60%;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+            opacity: 0.9;
+            transform: skewX(-20deg);
+            animation: tabShine 1.8s ease-in-out infinite;
+        }
+
+        .card {
+            background: radial-gradient(circle at top left, rgba(0, 255, 255, 0.18), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(255, 42, 109, 0.18), transparent 55%),
+                        rgba(5, 10, 30, 0.9);
+            border-radius: 18px;
+            padding: 16px 14px 18px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            box-shadow: 0 0 22px rgba(0, 255, 255, 0.25);
+            backdrop-filter: blur(8px);
+        }
+
+        .media-slider {
+            margin-top: 16px;
+            border-radius: 18px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            background: radial-gradient(circle at top left, rgba(0, 255, 255, 0.16), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(255, 42, 109, 0.16), transparent 55%),
+                        rgba(5, 10, 30, 0.9);
+            box-shadow: 0 0 22px rgba(0, 255, 255, 0.25);
+            overflow: hidden;
+        }
+
+        .media-slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px 4px;
+            font-size: 0.85rem;
+        }
+
+        .media-slider-header span {
+            opacity: 0.75;
+            font-size: 0.75rem;
+        }
+
+        .media-slider-track {
+            position: relative;
+            width: 100%;
+            height: 210px;
+        }
+
+        .media-slide {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .media-slide.active {
+            display: flex;
+        }
+
+        .media-slide img,
+        .media-slide video {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 14px;
+            border: 1px solid rgba(0, 255, 255, 0.35);
+            box-shadow: 0 0 18px rgba(0, 255, 255, 0.25);
+        }
+
+        .media-slider-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 14px 10px;
+            font-size: 0.8rem;
+            gap: 8px;
+        }
+
+        .media-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .media-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: rgba(0, 255, 255, 0.35);
+            opacity: 0.5;
+        }
+
+        .media-dot.active {
+            opacity: 1;
+            background: var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255, 42, 109, 0.8);
+        }
+
+        .media-nav-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .media-nav-buttons button {
+            border-radius: 999px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            background: rgba(5, 15, 35, 0.85);
+            color: #e0e0e0;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .media-nav-buttons button:hover {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255, 42, 109, 0.7);
+        }
+
+        h2 {
+            margin: 0 0 10px;
+            font-size: 1.05rem;
+            color: var(--neon-blue);
+        }
+
+        p {
+            margin: 0 0 8px;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            background: rgba(255, 42, 109, 0.2);
+            color: #ff9ec0;
+            margin-bottom: 6px;
+        }
+
+        .phrase-list li {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .updates-list li {
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .updates-list span {
+            display: inline-block;
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        /* ستايل البطاقات في قائمة الأقسام العامة (مستخدم مسبقًا) */
+
+        .sections-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .section-card {
+            width: 100%;
+            text-align: right;
+            border-radius: 18px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            padding: 12px 14px;
+            background: radial-gradient(circle at top left, rgba(0, 255, 255, 0.18), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(255, 42, 109, 0.18), transparent 55%),
+                        rgba(5, 10, 30, 0.9);
+            color: #f5f5f5;
+            cursor: pointer;
+            box-shadow: 0 0 18px rgba(0, 255, 255, 0.22);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+            border-color: var(--neon-pink);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            color: var(--neon-blue);
+        }
+
+        .section-sub {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* زرّ رجوع وخروج موحّدين */
+        .back-btn,
+        .exit-btn {
+            position: fixed;
+            top: 14px;
+            min-width: 80px;
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            background: rgba(5, 15, 35, 0.8);
+            font-size: 0.75rem;
+            color: #e0e0e0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.25s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.25);
+        }
+
+        .back-btn {
+            right: 14px;
+        }
+        
+        .exit-btn {
+            left: 14px;
+        }
+
+        .back-btn:hover,
+        .exit-btn:hover {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: 0 0 12px rgba(255, 42, 109, 0.7);
+        }
+
+        .back-btn img,
+        .exit-btn img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 5px var(--neon-blue));
+            transform: scaleX(-1);
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+
+        @keyframes firePulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes tabShine {
+            from { left: -60%; }
+            to   { left: 120%; }
+        }
+
+        @media (max-width: 480px) {
+            .app {
+                padding-inline: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.history.back()"><img src="images/left-arrow.png" alt="رجوع"></button>
+    <button class="exit-btn" onclick="window.location.href='index.html'"><img src="images/log-out.png" alt="خروج"></button>
+
+    <div class="app">
+        <header>
+            <div class="logo">بصمة</div>
+            <nav>
+                <button class="active" onclick="window.location.href='main.html'">الرئيسية</button>
+                <button onclick="window.location.href='phrases.html'">العبارات</button>
+                <button onclick="window.location.href='updates.html'">التحديثات</button>
+                <button onclick="window.location.href='settings.html'">الإعدادات</button>
+                <button onclick="window.location.href='about.html'">حول الموقع</button>
+            </nav>
+        </header>
+
+        <div class="media-slider" id="homeMediaSlider">
+            <div class="media-slider-header">
+                <strong>سلايدر الصور والفيديو</strong>
+                <span>يتم التحكم فيه من لوحة التحكم</span>
+            </div>
+            <div class="media-slider-track" id="homeMediaTrack">
+                <div class="media-slide active">
+                    <img src="images/instagram.png" alt="صورة تجريبية" />
+                </div>
+            </div>
+            <div class="media-slider-controls">
+                <div class="media-dots" id="homeMediaDots"></div>
+                <div class="media-nav-buttons">
+                    <button type="button" id="homeMediaPrev">السابق</button>
+                    <button type="button" id="homeMediaNext">التالي</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var homeMediaItems = [
+            {
+                type: "image",
+                url: "https://png.pngtree.com/thumb_back/fh260/background/20230516/pngtree-wolfs-full-hd-wallpaper-art-wallpaper-1920x1080-1080p-image_2571308.jpg",
+                title: "خلفية ذئب (رابط خارجي)",
+            },
+            {
+                type: "image",
+                url: "images/instagram.png",
+                title: "مثال صورة محلية",
+            },
+            {
+                type: "video",
+                url: "https://www.w3schools.com/html/mov_bbb.mp4",
+                title: "مثال فيديو mp4",
+            },
+        ];
+
+        var mediaTrack = document.getElementById("homeMediaTrack");
+        var mediaDots = document.getElementById("homeMediaDots");
+        var currentMediaIndex = 0;
+
+        function renderHomeMediaSlider() {
+            if (!mediaTrack || !mediaDots) return;
+
+            mediaTrack.innerHTML = "";
+            mediaDots.innerHTML = "";
+
+            homeMediaItems.forEach(function (item, index) {
+                var slide = document.createElement("div");
+                slide.className = "media-slide" + (index === currentMediaIndex ? " active" : "");
+
+                if (item.type === "video") {
+                    var video = document.createElement("video");
+                    video.src = item.url;
+                    video.controls = true;
+                    video.playsInline = true;
+                    slide.appendChild(video);
+                } else {
+                    var img = document.createElement("img");
+                    img.src = item.url;
+                    img.alt = item.title || "";
+                    slide.appendChild(img);
+                }
+
+                mediaTrack.appendChild(slide);
+
+                var dot = document.createElement("div");
+                dot.className = "media-dot" + (index === currentMediaIndex ? " active" : "");
+                dot.addEventListener("click", function () {
+                    currentMediaIndex = index;
+                    renderHomeMediaSlider();
+                });
+                mediaDots.appendChild(dot);
+            });
+        }
+
+        function shiftHomeMedia(dir) {
+            if (!homeMediaItems.length) return;
+            currentMediaIndex = (currentMediaIndex + dir + homeMediaItems.length) % homeMediaItems.length;
+            renderHomeMediaSlider();
+        }
+
+        document.getElementById("homeMediaPrev").addEventListener("click", function () {
+            shiftHomeMedia(-1);
+        });
+
+        document.getElementById("homeMediaNext").addEventListener("click", function () {
+            shiftHomeMedia(1);
+        });
+
+        renderHomeMediaSlider();
+    </script>
+</body>
+</html>

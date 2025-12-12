@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>آلُــــعـــرآبـــ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Tajawal:wght@400;700&display=swap');
+        
+        :root {
+            --neon-blue: #0ff;
+            --neon-pink: #ff2a6d;
+            --dark-bg: #0a0a1a;
+            --grid-color: rgba(0, 255, 255, 0.1);
+            --accent-gradient: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+            -webkit-touch-callout: none;
+            user-select: none;
+            pointer-events: none;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: var(--dark-bg);
+            color: var(--neon-blue);
+            font-family: 'Tajawal', 'Orbitron', sans-serif;
+            overflow: hidden;
+            position: relative;
+            position: relative;
+        }
+
+        /* خلفية آلُــــعـــرآبـــ */
+        .cyber-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -3;
+            animation: gridMove 20s linear infinite;
+        }
+
+        .cyber-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, var(--dark-bg) 70%);
+            z-index: -2;
+        }
+
+        .accent-effect {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20%;
+            background: var(--accent-gradient);
+            filter: blur(30px);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, var(--dark-bg) 21px, transparent 1%) center,
+                linear-gradient(var(--dark-bg) 21px, transparent 1%) center,
+                var(--neon-blue);
+            background-size: 22px 22px;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .cyber-dots {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .cyber-dot {
+            position: absolute;
+            background: var(--neon-blue);
+            border-radius: 50%;
+            filter: blur(1px);
+            animation: float 15s infinite linear;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .cyber-line {
+            position: fixed;
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+            z-index: 2;
+        }
+
+        .horizontal-line {
+            width: 100%;
+            height: 1px;
+            left: 0;
+            animation: scanHorizontal 8s linear infinite;
+        }
+
+        .vertical-line {
+            width: 1px;
+            height: 100%;
+            top: 0;
+            animation: scanVertical 12s linear infinite;
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to bottom, 
+                transparent, 
+                var(--neon-blue),
+                transparent);
+            animation: scan 4s linear infinite;
+            z-index: 5;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        /* تأثيرات النص */
+        .content {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            z-index: 3;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+            animation: neonPulse 2s ease-in-out infinite alternate;
+        }
+
+        h1::before, h1::after {
+            content: '❰❰';
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+            margin: 0 15px;
+            position: relative;
+            top: -5px;
+        }
+
+        h1::after {
+            content: '❱❱';
+        }
+
+        p {
+            font-size: 1.1rem;
+            max-width: 90%;
+            margin: 1rem auto 2rem;
+            color: #fff;
+            line-height: 1.6;
+            font-family: 'Tajawal', sans-serif;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        .cyber-text {
+            color: var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue);
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+        }
+
+        /* تأثيرات الحركة */
+        @keyframes gridMove {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 40px 40px;
+            }
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        @keyframes scanHorizontal {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        @keyframes scanVertical {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x, 0), var(--y, 0)) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        @keyframes neonPulse {
+            from {
+                text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue), 0 0 15px var(--neon-blue);
+            }
+            to {
+                text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 30px var(--neon-blue), 0 0 40px var(--neon-pink);
+            }
+        }
+
+        @keyframes flicker {
+            0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+                opacity: 0.99;
+                text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 30px var(--neon-blue);
+            }
+            20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+                opacity: 0.4;
+                text-shadow: none;
+            }
+        }
+
+        /* زر سايبر بنك ناري */
+        .cyber-button {
+            background: transparent;
+            color: var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+            padding: 12px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            margin-top: 20px;
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+            z-index: 1;
+            text-shadow: 0 0 5px var(--neon-blue);
+        }
+
+        .cyber-button::before, .cyber-button::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-style: solid;
+            border-color: var(--neon-blue);
+            transition: all 0.3s;
+            z-index: -1;
+        }
+
+        .cyber-button::before {
+            top: -5px;
+            left: -5px;
+            border-width: 2px 0 0 2px;
+        }
+
+        .cyber-button::after {
+            bottom: -5px;
+            right: -5px;
+            border-width: 0 2px 2px 0;
+        }
+
+        .cyber-button:hover {
+            background: rgba(0, 255, 255, 0.1);
+            color: #fff;
+            text-shadow: 0 0 10px #fff;
+            box-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue), 0 0 60px var(--neon-blue);
+            border-color: #fff;
+        }
+
+        .cyber-button:hover::before, .cyber-button:hover::after {
+            width: calc(100% + 10px);
+            height: calc(100% + 10px);
+            border-color: var(--neon-pink);
+        }
+
+        .cyber-button:active {
+            transform: translateY(2px);
+            box-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue);
+        }
+
+        .cyber-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* شاشة تنبيه قبل الدخول */
+        .entry-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+        }
+
+        .entry-overlay.active {
+            display: flex;
+        }
+
+        .entry-box {
+            max-width: 420px;
+            margin: 0 16px;
+            background: rgba(5, 10, 30, 0.95);
+            border-radius: 18px;
+            padding: 18px 16px 20px;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+            text-align: center;
+        }
+
+        .entry-title {
+            font-size: 1.1rem;
+            color: #ff4a4a;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-shadow: 0 0 8px rgba(255, 74, 74, 0.8);
+        }
+
+        .entry-title-icon {
+            font-size: 1.2rem;
+        }
+
+        .entry-text {
+            font-size: 0.9rem;
+            color: #fff;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .entry-text small {
+            display: block;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .fingerprint-btn {
+            margin-top: 10px;
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-blue);
+            background:
+                radial-gradient(circle at 30% 30%, rgba(0,255,255,0.4), transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(255,42,109,0.4), transparent 60%),
+                rgba(5, 10, 30, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 18px rgba(0, 255, 255, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fingerprint-btn img {
+            pointer-events: none;
+            -webkit-user-drag: none;
+            user-drag: none;
+            -webkit-touch-callout: none;
+            user-select: none;
+        }
+
+        .fingerprint-icon {
+            font-size: 2rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        .fingerprint-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6);
+            opacity: 0;
+            transform: scale(0.7);
+            transition: 0.25s ease;
+        }
+
+        .fingerprint-btn:hover::after {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* حلقة سايبري تدور حول البصمة أثناء التحقق */
+        .fingerprint-btn::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--neon-blue);
+            border-right-color: var(--neon-pink);
+            opacity: 0;
+        }
+
+        .fingerprint-active::before {
+            opacity: 1;
+            animation: spinRing 1s linear infinite;
+        }
+
+        .fingerprint-active {
+            animation: fpPulse 0.8s ease-in-out infinite alternate;
+        }
+
+        /* نص سايبري متحرك أثناء التحقق */
+        .verifying {
+            animation: verifyingPulse 0.8s infinite alternate;
+            color: var(--neon-blue);
+        }
+
+        .verified {
+            color: #0f0;
+            text-shadow: 0 0 10px #0f0;
+        }
+
+        @keyframes verifyingPulse {
+            from { opacity: 0.5; text-shadow: 0 0 5px var(--neon-blue); }
+            to   { opacity: 1;   text-shadow: 0 0 15px var(--neon-blue); }
+        }
+
+        @keyframes spinRing {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        @keyframes fpPulse {
+            from { transform: scale(1); }
+            to   { transform: scale(1.05); }
+        }
+
+        /* تصميم متخصص للهواتف فقط */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2rem;
+                letter-spacing: 1px;
+            }
+            
+            p {
+                font-size: 1rem;
+                max-width: 95%;
+            }
+            
+            .cyber-button {
+                padding: 10px 25px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* تعطيل التصميم للشاشات الكبيرة */
+        @media (min-width: 768px) {
+            body {
+                max-width: 480px;
+                margin: 0 auto;
+                box-shadow: 0 0 50px rgba(0, 255, 255, 0.3);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-bg"></div>
+    <div class="cyber-overlay"></div>
+    <div class="accent-effect"></div>
+    <div class="cyber-grid"></div>
+    <div class="cyber-dots" id="cyberDots"></div>
+    <div class="scanline"></div>
+    <div class="cyber-line horizontal-line" style="top: 30%;"></div>
+    <div class="cyber-line vertical-line" style="left: 30%;"></div>
+    <div class="cyber-line horizontal-line" style="bottom: 30%;"></div>
+    <div class="cyber-line vertical-line" style="right: 30%;"></div>
+
+    <div class="content">
+        <h1>آلُــــعـــرآبـــ</h1>
+        <p>مرحباً بك في عالم <span class="cyber-text">بصمة</span> حيث تلتقي القصص بأنماط عصرية</p>
+        <button class="cyber-button" id="entryButton"><span>دخول</span></button>
+    </div>
+
+    <!-- شاشة التنبيه قبل الدخول -->
+    <div class="entry-overlay" id="entryOverlay">
+        <div class="entry-box">
+            <div class="entry-title"><span class="entry-title-icon">⚠️</span><span>تنويه قبل الدخول</span></div>
+            <div class="entry-text">
+                هذا الموقع قد يحتوي على موسيقى خلفية يمكنك إيقافها لاحقاً من قسم <strong>الإعدادات</strong>.
+                <small>قد يتضمن أيضاً عبارات حزينة، وبالدخول فإنك تقر بأنك تتحمل مسؤولية استخدامك للموقع.</small>
+            </div>
+            <div class="entry-text" id="verificationStatus">
+                للمتابعة يجب أن تقوم بالبصمة للموافقة على الدخول.
+            </div>
+            <button class="fingerprint-btn" id="fingerprintConfirm">
+                <img src="images/fingerprint.png" alt="بصمة" style="width: 36px; height: 36px; filter: invert(1) brightness(1.2);">
+            </button>
+        </div>
+    </div>
+
+    <!-- صوت دقات القلب أثناء التحقق -->
+    <audio id="heartbeatSound" src="music/musicheartbeat.mp3" preload="auto"></audio>
+
+    <script>
+        // إنشاء النقاط المضيئة العشوائية (مُحسّن للهواتف)
+        function createCyberDots() {
+            const container = document.getElementById('cyberDots');
+            const dotCount = 15; // تقليل عدد النقاط لتحسين الأداء
+            
+            for (let i = 0; i < dotCount; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'cyber-dot';
+                
+                const size = Math.random() * 3 + 1; // تقليل الحجم
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 3; // تقليل التأخير
+                const duration = Math.random() * 8 + 8; // تسريع الحركة
+                const isNeon = Math.random() > 0.8; // تقليل النقاط الوردية
+                
+                dot.style.width = `${size}px`;
+                dot.style.height = `${size}px`;
+                dot.style.left = `${posX}%`;
+                dot.style.top = `${posY}%`;
+                dot.style.animationDelay = `${delay}s`;
+                dot.style.animationDuration = `${duration}s`;
+                
+                if (isNeon) {
+                    dot.style.background = 'var(--neon-pink)';
+                    dot.style.boxShadow = '0 0 10px var(--neon-pink)';
+                }
+                
+                dot.style.setProperty('--x', `${(Math.random() - 0.5) * 200}px`);
+                dot.style.setProperty('--y', `${(Math.random() - 0.5) * 200}px`);
+                
+                container.appendChild(dot);
+            }
+        }
+
+        // تأثير الكتابة للنص
+        function typeWriter() {
+            const text = "آلُــــعـــرآبـــ";
+            const h1 = document.querySelector('h1');
+            h1.textContent = '';
+            
+            let i = 0;
+            const speed = 150;
+            
+            function type() {
+                if (i < text.length) {
+                    h1.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    // إضافة تأثير الوميض بعد اكتمال الكتابة
+                    h1.style.animation = 'flicker 3s infinite';
+                }
+            }
+            
+            type();
+        }
+
+        // تأثيرات إضافية للزر + فتح شاشة التنبيه
+        function initButtonEffects() {
+            const button = document.querySelector('.cyber-button');
+            const overlay = document.getElementById('entryOverlay');
+            const fingerprint = document.getElementById('fingerprintConfirm');
+            const statusText = document.getElementById('verificationStatus');
+            const heartbeat = document.getElementById('heartbeatSound');
+            let holdTimeout = null;
+            let countdownInterval = null;
+            
+            button.addEventListener('mousemove', (e) => {
+                const rect = button.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                button.style.setProperty('--x', `${x}px`);
+                button.style.setProperty('--y', `${y}px`);
+            });
+            
+            // تأثير النقر على الزر + إظهار شاشة التنبيه
+            button.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                    // إظهار شاشة التنبيه
+                    overlay.classList.add('active');
+                }, 150);
+            });
+
+            // ضبط ضغط مطول على زر البصمة للموافقة والدخول
+            if (fingerprint) {
+                const startHold = () => {
+                    if (!statusText) return;
+                    // نص سايبري أثناء التحقق
+                    let remaining = 5;
+                    statusText.textContent = `جاري التحقق من نبضات القلب... (${remaining})`;
+                    statusText.classList.remove('verified');
+                    statusText.classList.add('verifying');
+
+                    if (fingerprint) {
+                        fingerprint.classList.add('fingerprint-active');
+                    }
+
+                    // تشغيل صوت دقات القلب
+                    if (heartbeat) {
+                        try {
+                            heartbeat.currentTime = 0;
+                            heartbeat.play();
+                        } catch (e) {
+                            // تجاهل أي خطأ من المتصفح في تشغيل الصوت التلقائي
+                        }
+                    }
+
+                    // عداد تنازلي 5 ثواني
+                    if (countdownInterval) {
+                        clearInterval(countdownInterval);
+                    }
+                    countdownInterval = setInterval(() => {
+                        remaining--;
+                        if (remaining > 0) {
+                            statusText.textContent = `جاري التحقق من نبضات القلب... (${remaining})`;
+                        }
+                    }, 1000);
+
+                    holdTimeout = setTimeout(() => {
+                        if (countdownInterval) {
+                            clearInterval(countdownInterval);
+                            countdownInterval = null;
+                        }
+                        statusText.textContent = 'تم التحقق بنجاح';
+                        statusText.classList.remove('verifying');
+                        statusText.classList.add('verified');
+
+                        setTimeout(() => {
+                            overlay.classList.remove('active');
+                            if (fingerprint) {
+                                fingerprint.classList.remove('fingerprint-active');
+                            }
+                            if (heartbeat) {
+                                heartbeat.pause();
+                                heartbeat.currentTime = 0;
+                            }
+                            window.location.href = 'main.html';
+                        }, 600);
+                    }, 5000); // 5 ثواني ضغط مطول
+                };
+
+                const cancelHold = () => {
+                    if (holdTimeout) {
+                        clearTimeout(holdTimeout);
+                        holdTimeout = null;
+                        if (countdownInterval) {
+                            clearInterval(countdownInterval);
+                            countdownInterval = null;
+                        }
+                        if (statusText) {
+                            statusText.textContent = 'للمتابعة يجب أن تقوم بالبصمة للموافقة على الدخول.';
+                            statusText.classList.remove('verifying', 'verified');
+                        }
+                        if (fingerprint) {
+                            fingerprint.classList.remove('fingerprint-active');
+                        }
+                        if (heartbeat) {
+                            heartbeat.pause();
+                            heartbeat.currentTime = 0;
+                        }
+                    }
+                };
+
+                fingerprint.addEventListener('mousedown', startHold);
+                fingerprint.addEventListener('touchstart', startHold);
+                fingerprint.addEventListener('mouseup', cancelHold);
+                fingerprint.addEventListener('mouseleave', cancelHold);
+                fingerprint.addEventListener('touchend', cancelHold);
+                fingerprint.addEventListener('touchcancel', cancelHold);
+            }
+        }
+
+        // تهيئة التأثيرات عند تحميل الصفحة
+        window.onload = function() {
+            createCyberDots();
+            typeWriter();
+            initButtonEffects();
+        };
+    </script>
+</body>
+</html>
