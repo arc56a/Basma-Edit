@@ -13,104 +13,791 @@
             --grid-color: rgba(0, 255, 255, 0.08);
             --fire-gradient: linear-gradient(0deg, #ff2a00, #ff8c00, #ff2a00);
         }
-        * { -webkit-tap-highlight-color: transparent; }
-        img { -webkit-user-drag: none; user-drag: none; -webkit-touch-callout: none; user-select: none; pointer-events: none; }
-        button, a { outline: none; }
-        button:focus, button:active, a:focus { outline: none; }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+            -webkit-touch-callout: none;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        button,
+        a {
+            outline: none;
+        }
+
+        button:focus,
+        button:active,
+        a:focus {
+            outline: none;
+        }
+
         body {
-            margin: 0; padding: 0; min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
             font-family: 'Tajawal', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--dark-bg); color: #f5f5f5; position: relative;
-            overflow-x: hidden; width: 100%; max-width: 480px; margin-left: auto; margin-right: auto; box-sizing: border-box;
+            background: var(--dark-bg);
+            color: #f5f5f5;
+            position: relative;
+            overflow-x: hidden; /* منع التمرير الأفقي */
+            width: 100%;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+            box-sizing: border-box;
         }
-        body::before, body::after { content: ''; position: fixed; inset: 0; z-index: -2; }
+
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+        }
+
         body::before {
-            background: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 40px 40px; animation: gridMove 22s linear infinite;
+            background:
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridMove 22s linear infinite;
         }
+
         body::after {
             background: radial-gradient(circle at 50% 120%, var(--fire-gradient) 0%, transparent 60%);
-            filter: blur(18px); opacity: 0.55; animation: firePulse 4s ease-in-out infinite alternate;
+            filter: blur(18px);
+            opacity: 0.55;
+            animation: firePulse 4s ease-in-out infinite alternate;
         }
+
         .screen {
-            min-height: 100vh; max-width: 480px; width: 100%; margin: 0 auto;
-            padding: 16px 14px 24px; display: flex; flex-direction: column; gap: 16px;
-            box-sizing: border-box; position: relative;
+            min-height: 100vh;
+            max-width: 480px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 16px 14px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-sizing: border-box;
+            position: relative;
         }
+
         header {
-            position: sticky; top: 56px; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            gap: 8px; padding: 8px 10px; border-radius: 14px; background: rgba(5, 10, 30, 0.85);
-            border: 1px solid rgba(0, 255, 255, 0.35); box-shadow: 0 0 18px rgba(0, 255, 255, 0.3);
-            transition: opacity 0.4s ease; text-align: center;
+            position: sticky;
+            top: 56px;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 14px;
+            background: rgba(5, 10, 30, 0.85);
+            border: 1px solid rgba(0, 255, 255, 0.35);
+            box-shadow: 0 0 18px rgba(0, 255, 255, 0.3);
+            transition: opacity 0.4s ease;
+            text-align: center;
         }
+
         .logo {
-            position: relative; font-weight: 700; letter-spacing: 2px; font-size: 1.1rem;
-            color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); z-index: 1;
+            position: relative;
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-size: 1.1rem;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+            z-index: 1;
         }
-        nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -10px;
+            width: 32px;
+            height: 32px;
+            background: url('images/fingerprint.png') center/contain no-repeat;
+            opacity: 0.25;
+            filter: invert(1) brightness(1.3);
+            pointer-events: none;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+        }
+
         nav button {
-            border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 999px; padding: 4px 8px;
-            font-size: 0.7rem; background: rgba(5, 15, 35, 0.8); color: #e0e0e0; cursor: pointer;
-            transition: 0.25s ease; position: relative; overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            border-radius: 999px;
+            padding: 4px 8px;
+            font-size: 0.7rem;
+            background: rgba(5, 15, 35, 0.8);
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: 0.25s ease;
+            position: relative;
+            overflow: hidden;
         }
-        nav button:hover { border-color: var(--neon-pink); color: var(--neon-pink); box-shadow: 0 0 12px rgba(255, 42, 109, 0.7); }
+
+        nav button:hover {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: 0 0 12px rgba(255, 42, 109, 0.7);
+        }
+
         nav button.active {
-            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink)); color: #050814; font-weight: 600;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink));
+            color: #050814;
+            font-weight: 600;
             box-shadow: 0 0 18px rgba(0, 255, 255, 0.8), 0 0 28px rgba(255, 42, 109, 0.7);
         }
-        .back-btn, .exit-btn {
-            position: fixed; top: 14px; min-width: 80px; height: 34px; padding: 0 10px; border-radius: 999px;
-            border: 1px solid rgba(0, 255, 255, 0.4); background: rgba(5, 15, 35, 0.8); font-size: 0.75rem; color: #e0e0e0;
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
-            z-index: 10; transition: 0.25s ease; box-shadow: 0 0 10px rgba(0, 255, 255, 0.25);
-        }
-        .back-btn { right: 14px; }
-        .exit-btn { left: 14px; }
-        .phrases-section { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; margin-top: 24px; margin-bottom: 20px; transition: transform 0.4s ease; }
-        .phrase-slider { position: relative; width: 100%; max-width: 360px; height: 200px; perspective: 1400px; }
-        .phrase-card {
-            position: absolute; inset: 0; padding: 20px; border-radius: 18px; background: rgba(10,10,20,0.55);
-            backdrop-filter: blur(6px); border: 1px solid rgba(255,150,70,0.5);
-            box-shadow: 0 0 20px rgba(255,100,40,0.5), 0 0 35px rgba(255,170,50,0.3);
-            display: flex; align-items: center; justify-content: center; text-align: center;
-            transform-style: preserve-3d; backface-visibility: hidden; opacity: 0;
-            transform: rotateY(40deg) translateZ(-160px) scale(.85); transition: transform 1s ease, opacity 1s ease;
-        }
-        .phrase-user { position: absolute; top: 12px; right: 18px; font-size: 0.7rem; font-weight: 600; color: #f5f5f5; text-shadow: none; opacity: 0.4; }
-        .phrase-card.active { opacity: 1; transform: rotateY(0deg) translateZ(0) scale(1.07); z-index: 10; }
-        .phrase-card.prev { opacity: .3; transform: translateX(120px) rotateY(-40deg) translateZ(-200px) scale(.85); }
-        .phrase-card.next { opacity: .3; transform: translateX(-120px) rotateY(40deg) translateZ(-200px) scale(.85); }
-        .phrase-text { text-align: center; font-size: 1.05rem; line-height: 1.7; overflow-wrap: break-word; padding: 0 30px; box-sizing: border-box; width: 100%; }
-        .phrase-nav { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 12px; transition: opacity 0.4s ease; }
-        .phrase-btn {
-            width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(0, 255, 255, 0.5);
-            background: radial-gradient(circle at 30% 0%, rgba(0,255,255,0.2), transparent 60%), rgba(5, 15, 35, 0.95);
-            color: #f5f5f5; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
-            box-shadow: 0 0 12px rgba(0, 255, 255, 0.6); transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-        }
-        .phrase-counter { margin-top: 6px; font-size: 0.9rem; letter-spacing: 0.08em; color: #cfd8dc; }
-        .phrase-counter span { color: var(--neon-pink); text-shadow: 0 0 8px rgba(255, 42, 109, 0.9); font-weight: 600; }
-        .search-container { margin-bottom: 10px; position: relative; transition: opacity 0.4s ease; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .phrase-search {
-            width: 100%; max-width: 200px; padding: 10px 16px; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 25px;
-            background: rgba(5, 15, 35, 0.8); color: #f5f5f5; font-size: 0.9rem; text-align: center; outline: none;
-            transition: all 0.3s ease; box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
-        }
-        .add-phrase-section { padding: 15px; border-radius: 14px; background: rgba(5, 10, 30, 0.7); border: 1px solid rgba(0, 255, 255, 0.2); text-align: center; }
-        #showAddFormBtn { width: 100%; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--neon-blue); background: transparent; color: var(--neon-blue); font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; }
-        #addPhraseForm { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(10px); z-index: 50; }
-        #addPhraseForm.hidden { display: none; }
-        #addPhraseForm.visible { display: flex; }
-        
-        /* Like button styles */
-        .phrase-card-footer { position: absolute; bottom: 12px; left: 18px; display: flex; align-items: center; gap: 8px; }
-        .like-btn { background: none; border: none; cursor: pointer; font-size: 1.5rem; color: rgba(255, 255, 255, 0.7); transition: color 0.3s, transform 0.3s; padding: 0; }
-        .like-btn:hover { transform: scale(1.15); }
-        .like-btn.liked { color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink); animation: like-pop 0.4s ease; }
-        @keyframes like-pop { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
-        .likes-counter { font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); font-weight: 600; }
 
-        .form-message { display: none; margin-top: 15px; font-size: 0.9rem; color: var(--success); }
+        nav button.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -60%;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+            opacity: 0.9;
+            transform: skewX(-20deg);
+            animation: tabShine 1.8s ease-in-out infinite;
+        }
+
+        .back-btn,
+        .exit-btn {
+            position: fixed;
+            top: 14px;
+            min-width: 80px;
+            height: 34px;
+            padding: 0 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            background: rgba(5, 15, 35, 0.8);
+            font-size: 0.75rem;
+            color: #e0e0e0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 10;
+            transition: 0.25s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.25);
+        }
+
+        .back-btn {
+            right: 14px;
+        }
+
+        .exit-btn {
+            left: 14px;
+        }
+
+        .back-btn:hover,
+        .exit-btn:hover {
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: 0 0 12px rgba(255, 42, 109, 0.7);
+        }
+
+        .back-btn img,
+        .exit-btn img {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 5px var(--neon-blue));
+            transform: scaleX(-1);
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 40px 40px; }
+        }
+
+        @keyframes firePulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes tabShine {
+            from { left: -60%; }
+            to   { left: 120%; }
+        }
+        .phrases-section {
+            /* flex: 1; */ /* تم التعليق لرفع قسم الإضافة */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            margin-top: 24px;
+            margin-bottom: 20px; /* إضافة هامش سفلي لبعض التباعد */
+            transition: transform 0.4s ease;
+        }
+
+        /* خلفية نار متحركة للفريم */
+        .phrase-slider {
+            position: relative;
+            width: 100%;
+            max-width: 360px;
+            height: 200px;
+            perspective: 1400px;
+        }
+
+        /* فيديو خلفية نار */
+        .phrase-slider::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: url('images/fire-loop.webm');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(1.4) saturate(1.6) blur(1px);
+            opacity: 0.45;
+            z-index: -3;
+        }
+
+        /* الكرت */
+        .phrase-card {
+            position: absolute;
+            inset: 0;
+            padding: 20px;
+            border-radius: 18px;
+            background: rgba(10,10,20,0.55);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,150,70,0.5);
+            box-shadow:
+                0 0 20px rgba(255,100,40,0.5),
+                0 0 35px rgba(255,170,50,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+
+            opacity: 0;
+            transform: rotateY(40deg) translateZ(-160px) scale(.85);
+            transition: transform 1s ease, opacity 1s ease;
+        }
+
+        .phrase-user {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #f5f5f5;
+            text-shadow: none;
+            opacity: 0.4;
+        }
+
+        /* شرار نار */
+        .phrase-card::after {
+            content: "";
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, rgba(255,140,40,1) 0%, rgba(255,140,40,0) 70%);
+            border-radius: 50%;
+            animation: fireParticle 2s infinite ease-in-out;
+            bottom: 15px;
+            right: 25px;
+            opacity: .8;
+        }
+
+        /* أيقونة البصمة الشفافة في أعلى يسار البطاقة */
+        .phrase-card::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            width: 26px;
+            height: 26px;
+            background: url('images/fingerprint.png') center/contain no-repeat;
+            opacity: 0.26;
+            filter: invert(1) brightness(1.3);
+            pointer-events: none;
+        }
+
+        .phrase-actions {
+            position: absolute;
+            bottom: 15px;
+            left: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1;
+        }
+
+        .like-btn {
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            color: #bdbdbd;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .like-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        .like-btn:hover {
+            color: var(--neon-pink);
+            transform: scale(1.1);
+        }
+
+        .like-btn.liked {
+            color: var(--neon-pink);
+        }
+
+        .like-btn.liked svg {
+            fill: var(--neon-pink);
+            stroke: var(--neon-pink);
+        }
+
+        .like-count {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            min-width: 12px;
+        }
+
+        @keyframes fireParticle {
+            0% { transform: translateY(0) scale(.9); opacity: .8; }
+            50% { transform: translateY(-12px) scale(1.2); opacity: 1; }
+            100% { transform: translateY(0) scale(.95); opacity: .7; }
+        }
+
+        /* الكرت النشط */
+        .phrase-card.active {
+            opacity: 1;
+            transform: rotateY(0deg) translateZ(0) scale(1.07);
+            z-index: 10;
+        }
+
+        /* الكرت السابق */
+        .phrase-card.prev {
+            opacity: .3;
+            transform: translateX(120px) rotateY(-40deg) translateZ(-200px) scale(.85);
+        }
+
+        /* الكرت التالي */
+        .phrase-card.next {
+            opacity: .3;
+            transform: translateX(-120px) rotateY(40deg) translateZ(-200px) scale(.85);
+        }
+
+        .phrase-text {
+            text-align: center;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            overflow-wrap: break-word;
+            padding: 0 30px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .phrase-text strong {
+            color: var(--neon-blue);
+        }
+
+        .phrase-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 12px;
+            transition: opacity 0.4s ease;
+        }
+
+        .phrase-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            background: radial-gradient(circle at 30% 0%, rgba(0,255,255,0.2), transparent 60%), rgba(5, 15, 35, 0.95);
+            color: #f5f5f5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.6);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+        }
+
+        .phrase-btn:hover {
+            transform: translateY(-1px) scale(1.03);
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 16px rgba(255, 42, 109, 0.85);
+        }
+
+        .phrase-counter {
+            margin-top: 6px;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            color: #cfd8dc;
+        }
+
+        .phrase-counter span {
+            color: var(--neon-pink);
+            text-shadow: 0 0 8px rgba(255, 42, 109, 0.9);
+            font-weight: 600;
+        }
+
+        .search-container {
+            margin-bottom: 10px;
+            position: relative;
+            transition: opacity 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .camera-btn {
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            border-radius: 50%;
+            background: rgba(5, 15, 35, 0.8);
+            color: rgba(0, 255, 255, 0.7);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .camera-btn:hover {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 16px rgba(255, 42, 109, 0.6);
+            color: var(--neon-pink);
+            transform: scale(1.05);
+        }
+
+        .camera-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .phrase-search {
+            width: 100%;
+            max-width: 200px;
+            padding: 10px 16px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            border-radius: 25px;
+            background: rgba(5, 15, 35, 0.8);
+            color: #f5f5f5;
+            font-size: 0.9rem;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
+        }
+
+        .phrase-search:focus {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 16px rgba(255, 42, 109, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .phrase-search::placeholder {
+            color: rgba(207, 216, 220, 0.6);
+            text-align: center;
+        }
+
+        .add-phrase-section {
+            padding: 15px;
+            border-radius: 14px;
+            background: rgba(5, 10, 30, 0.7);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            text-align: center;
+        }
+        
+        #showAddFormBtn {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--neon-blue);
+            background: transparent;
+            color: var(--neon-blue);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #showAddFormBtn.hidden {
+            display: none;
+        }
+
+        #showAddFormBtn:hover {
+             background: rgba(0, 255, 255, 0.1);
+             box-shadow: 0 0 16px rgba(0, 255, 255, 0.5);
+        }
+        
+        #addPhraseForm {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(10px);
+            z-index: 50;
+        }
+
+        #addPhraseForm.hidden {
+            display: none;
+        }
+
+        .add-phrase-modal {
+            width: 100%;
+            max-width: 380px;
+            margin: 0 16px;
+            padding: 16px 14px 14px;
+            border-radius: 16px;
+            background: rgba(5, 10, 30, 0.95);
+            border: 1px solid rgba(0, 255, 255, 0.25);
+            box-shadow: 0 0 22px rgba(0, 255, 255, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .add-phrase-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 6px;
+            text-align: center;
+            color: #e0f7fa;
+        }
+
+        .add-phrase-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .add-phrase-preview {
+            margin-top: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .preview-slider {
+            width: 100%;
+            max-width: 320px;
+            height: 170px;
+        }
+
+        .preview-hint {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0;
+            text-align: center;
+        }
+
+        #addPhraseForm input {
+            width: calc(100% - 24px);
+            padding: 10px 12px;
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            border-radius: 8px;
+            background: rgba(5, 15, 35, 0.8);
+            color: #f5f5f5;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #addPhraseForm input.input-error {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 8px rgba(255, 42, 109, 0.7);
+        }
+        
+        .error-message {
+            color: var(--neon-pink);
+            font-size: 0.8rem;
+            min-height: 1.2em;
+            text-align: right;
+        }
+        
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .form-buttons button {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        #addPhraseBtn {
+            border: 1px solid var(--neon-pink);
+            background: var(--neon-pink);
+            color: var(--dark-bg);
+        }
+
+        #addPhraseBtn:hover {
+            box-shadow: 0 0 16px rgba(255, 42, 109, 0.8);
+        }
+
+        #cancelAddBtn {
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: transparent;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        #cancelAddBtn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+
+        .screenshot-mode {
+            background: #000;
+        }
+
+        .screenshot-mode header,
+        .screenshot-mode .search-container,
+        .screenshot-mode .back-btn,
+        .screenshot-mode .exit-btn,
+        .screenshot-mode .add-phrase-section {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* طبقة ضبابية قوية فوق الشاشة كاملة في وضع التصوير */
+        .screenshot-mode .screen::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(14px);
+            z-index: 1;
+        }
+
+        /* إبقاء بطاقات العبارات والتنقل والعداد فوق الطبقة */
+        .screenshot-mode .phrases-section,
+        .screenshot-mode .phrase-slider,
+        .screenshot-mode .phrase-nav,
+        .screenshot-mode .phrase-counter {
+            position: relative;
+            z-index: 2;
+        }
+
+        .screenshot-mode .phrases-section {
+            margin-top: 40px;
+        }
+
+        /* في وضع التصوير لا نغيّر حجم أو شكل البطاقات، ونخفي إطارها تمامًا */
+        .screenshot-mode .phrase-card {
+            border-color: transparent;
+            box-shadow: none;
+        }
+
+        .screenshot-nav {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .screenshot-nav.active {
+            display: flex;
+        }
+
+        .screenshot-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid rgba(0, 255, 255, 0.6);
+            background: rgba(5, 15, 35, 0.9);
+            color: #f5f5f5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .screenshot-btn:hover {
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 25px rgba(255, 42, 109, 0.8);
+            transform: scale(1.1);
+        }
+
+        .screenshot-close-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(10, 20, 40, 0.7);
+            color: white;
+            cursor: pointer;
+            z-index: 110;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .screenshot-close-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--neon-pink);
+        }
+
+        .screenshot-mode .screenshot-close-btn {
+            display: flex;
+        }
+
+        @media (max-height: 640px) {
+            .phrases-section {
+                justify-content: flex-start;
+                margin-top: 20px;
+            }
+
+            .phrase-slider {
+                height: 150px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -118,8 +805,8 @@
     <button class="exit-btn" onclick="window.location.href='index.html'"><img src="images/log-out.png" alt="خروج"></button>
     <div class="screen">
         <header>
-             <div class="logo">بصمة</div>
-             <nav>
+            <div class="logo">بصمة</div>
+            <nav>
                 <button onclick="window.location.href='main.html'">الرئيسية</button>
                 <button class="active" onclick="window.location.href='phrases.html'">العبارات</button>
                 <button onclick="window.location.href='updates.html'">التحديثات</button>
@@ -130,218 +817,487 @@
         <div class="phrases-section">
             <div class="search-container">
                 <button class="camera-btn" id="cameraBtn" title="وضع لقطة الشاشة">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
                 </button>
-                <input type="number" class="phrase-search" id="phraseSearch" placeholder="اكتب رقم العبارة" min="1">
+                <input type="number" 
+                       class="phrase-search" 
+                       id="phraseSearch" 
+                       placeholder="اكتب رقم العبارة"
+                       min="1"
+                       max="3">
             </div>
             <div class="phrase-slider" id="phraseSlider"></div>
+
             <div class="phrase-nav">
                 <button class="phrase-btn" id="prevPhrase" aria-label="العبارة السابقة">‹</button>
-                <div class="phrase-counter">العبارة <span id="currentPhrase"></span> / <span id="totalPhrases"></span></div>
+                <div class="phrase-counter">
+                    العبارة <span id="currentPhrase"></span> / <span id="totalPhrases"></span>
+                </div>
                 <button class="phrase-btn" id="nextPhrase" aria-label="العبارة التالية">›</button>
             </div>
         </div>
+
         <div class="add-phrase-section">
             <div id="countdownTimer" style="display: none; text-align: center; margin-bottom: 15px; font-size: 1rem; color: var(--neon-pink);"></div>
-            <div id="form-message" class="form-message"></div>
             <button id="showAddFormBtn">إضافة عبارة جديدة</button>
-        </div>
-    </div>
-    <div id="addPhraseForm" class="hidden">
-        <div class="add-phrase-modal">
-            <h3 class="add-phrase-title">إضافة عبارة جديدة</h3>
-            <div class="add-phrase-fields">
-                <input type="text" id="newPhraseText" placeholder="اكتب عبارتك هنا (10-150 حرف)" maxlength="150">
-                <div id="phraseError" class="error-message"></div>
-                <input type="text" id="newPhraseUser" placeholder="اسم المستخدم (3-15 حرف، إنجليزي)" autocomplete="off" maxlength="15">
-                <div id="userError" class="error-message"></div>
-            </div>
-            <div class="add-phrase-preview">
-                <div class="phrase-slider preview-slider">
-                    <div class="phrase-card active" id="previewPhraseCard">
-                        <div class="phrase-user" id="previewPhraseUser" style="display: none;">@username</div>
-                        <div class="phrase-text" id="previewPhraseText">هنا ستظهر عبارتك قبل النشر.</div>
+            <div id="addPhraseForm" class="hidden">
+                <div class="add-phrase-modal">
+                    <h3 class="add-phrase-title">إضافة عبارة جديدة</h3>
+                    <div class="add-phrase-fields">
+                        <input type="text" id="newPhraseText" placeholder="اكتب عبارتك هنا (10-150 حرف)" maxlength="150">
+                        <div id="phraseError" class="error-message"></div>
+                        <input type="text" id="newPhraseUser" placeholder="اسم المستخدم (3-15 حرف، إنجليزي)" autocomplete="off" maxlength="15">
+                        <div id="userError" class="error-message"></div>
+                    </div>
+                    <div class="add-phrase-preview">
+                        <div class="phrase-slider preview-slider">
+                            <div class="phrase-card active" id="previewPhraseCard">
+                                <div class="phrase-user" id="previewPhraseUser" style="display: none;">@username</div>
+                                <div class="phrase-text" id="previewPhraseText">هنا ستظهر عبارتك قبل النشر.</div>
+                            </div>
+                        </div>
+                        <p class="preview-hint">شاهد شكل البطاقة قبل الإرسال، مع اسم المستخدم الخاص بك.</p>
+                    </div>
+                    <div class="form-buttons">
+                        <button id="addPhraseBtn">إرسال</button>
+                        <button id="cancelAddBtn" type="button">إلغاء</button>
                     </div>
                 </div>
-                <p class="preview-hint">شاهد شكل البطاقة قبل الإرسال، مع اسم المستخدم الخاص بك.</p>
             </div>
-            <div class="form-buttons">
-                <button id="addPhraseBtn">إرسال</button>
-                <button id="cancelAddBtn" type="button">إلغاء</button>
-            </div>
+            <p style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); margin-top: 15px;">
+                يحق لكل شخص نشر عبارة واحدة كل 24 ساعة.
+            </p>
         </div>
     </div>
+    
+    <button class="screenshot-close-btn" id="screenshotCloseBtn" title="إغلاق وضع التصوير">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // --- Appwrite Configuration ---
             const APPWRITE_ENDPOINT = "https://fra.cloud.appwrite.io/v1";
             const APPWRITE_PROJECT_ID = "basmaedit56";
             const DATABASE_ID = "693b73ab003790d00cf3";
-            const PHRASES_COLLECTION_ID = "phrases_section";
+            const PHRASES_COLLECTION_ID = "phrases_section"; // For both settings and phrases
 
-            const { ID, Query, Client, Account, Databases } = window.Appwrite;
+            const { ID, Query, Client, Databases } = window.Appwrite;
             const client = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
             const databases = new Databases(client);
-            const account = new Account(client);
 
             let phraseSettings = null;
-            let anonymousUser = null;
-            let phraseDocs = [];
 
-            // --- UI Elements ---
+            // --- DOM Elements ---
             const showFormBtn = document.getElementById('showAddFormBtn');
-            const addFormContainer = document.getElementById('addPhraseForm');
-            const slider = document.getElementById('phraseSlider');
-            
-            // --- Anonymous Auth ---
-            const getAnonymousUser = async () => {
-                try {
-                    return await account.get();
-                } catch (error) {
-                    try {
-                        return await account.createAnonymousSession();
-                    } catch (e) {
-                        console.error("Failed to create anonymous session", e);
-                        return null;
-                    }
-                }
-            };
+            const addForm = document.getElementById('addPhraseForm');
+            const cancelBtn = document.getElementById('cancelAddBtn');
+            const addPhraseBtn = document.getElementById('addPhraseBtn');
+            const newPhraseText = document.getElementById('newPhraseText');
+            const newPhraseUser = document.getElementById('newPhraseUser');
+            const userError = document.getElementById('userError');
+            const phraseError = document.getElementById('phraseError');
+            const countdownTimerEl = document.getElementById('countdownTimer');
+            const previewPhraseText = document.getElementById('previewPhraseText');
+            const previewPhraseUser = document.getElementById('previewPhraseUser');
+            const previewPhraseCard = document.getElementById('previewPhraseCard');
 
-            // --- Like Logic ---
-            const handleLike = async (docId, likeBtn, counterEl) => {
-                if (!anonymousUser) {
-                    console.error("Anonymous user not found.");
-                    return;
-                }
-                const userId = anonymousUser.$id;
-                let phrase = phraseDocs.find(d => d.$id === docId);
-                if (!phrase) return;
-
-                const likedBy = phrase.liked_by || [];
-                const isLiked = likedBy.includes(userId);
-                const originalLikes = phrase.likes;
-
-                // Optimistic UI update
-                likeBtn.classList.toggle('liked', !isLiked);
-                phrase.likes = isLiked ? phrase.likes - 1 : phrase.likes + 1;
-                counterEl.textContent = phrase.likes;
-                if(isLiked) {
-                    phrase.liked_by = likedBy.filter(id => id !== userId);
-                } else {
-                    phrase.liked_by.push(userId);
-                }
-
-                try {
-                    await databases.updateDocument(DATABASE_ID, PHRASES_COLLECTION_ID, docId, {
-                        likes: phrase.likes,
-                        liked_by: phrase.liked_by
-                    });
-                } catch (error) {
-                    console.error("Failed to update likes:", error);
-                    // Revert UI on failure
-                    phrase.likes = originalLikes;
-                    phrase.liked_by = likedBy;
-                    likeBtn.classList.toggle('liked', isLiked);
-                    counterEl.textContent = originalLikes;
-                }
-            };
-            
-            // --- Slider & Card Management ---
             const sliderManager = {
-                // ... (most of the slider manager remains the same)
+                slider: document.getElementById('phraseSlider'),
+                cards: [],
+                currentSpan: document.getElementById('currentPhrase'),
+                totalSpan: document.getElementById('totalPhrases'),
+                searchInput: document.getElementById('phraseSearch'),
+                prevBtn: document.getElementById('prevPhrase'),
+                nextBtn: document.getElementById('nextPhrase'),
+                total: 0,
+                current: 0,
+                startX: null,
+
+                init: function() {
+                    if (!this.slider) return;
+                    this.updateCardList();
+                    this.bindEvents();
+                    this.updateClasses();
+                },
+                updateCardList: function() {
+                    this.cards = Array.from(this.slider.querySelectorAll('.phrase-card'));
+                    this.total = this.cards.length;
+                    if (this.totalSpan) this.totalSpan.textContent = this.total > 0 ? this.total : '0';
+                    if (this.searchInput) this.searchInput.max = this.total;
+                },
+                fitTextToCard: function(cardElement) {
+                    const textElement = cardElement.querySelector('.phrase-text');
+                    if (!textElement) return;
+                    const maxTextHeight = cardElement.clientHeight - 50;
+                    textElement.style.fontSize = '';
+                    const initialFontSize = parseFloat(getComputedStyle(textElement).fontSize);
+                    let currentSize = initialFontSize;
+                    const minFontSize = 10;
+                    while (textElement.scrollHeight > maxTextHeight && currentSize > minFontSize) {
+                        currentSize -= 1;
+                        textElement.style.fontSize = `${currentSize}px`;
+                    }
+                },
+                updateClasses: function() {
+                    if (this.total === 0) {
+                        if (this.currentSpan) this.currentSpan.textContent = '0';
+                        if (this.searchInput) this.searchInput.value = '';
+                        return;
+                    }
+                    this.cards.forEach(card => {
+                        const textElement = card.querySelector('.phrase-text');
+                        if (textElement) textElement.style.fontSize = '';
+                    });
+                    this.cards.forEach((card, index) => {
+                        card.classList.remove('active', 'prev', 'next');
+                        if (index === this.current) {
+                            card.classList.add('active');
+                            this.fitTextToCard(card);
+                        } else if (index === (this.current - 1 + this.total) % this.total) {
+                            card.classList.add('prev');
+                        } else if (index === (this.current + 1) % this.total) {
+                            card.classList.add('next');
+                        }
+                    });
+                    if (this.currentSpan) this.currentSpan.textContent = this.current + 1;
+                    if (this.searchInput) this.searchInput.value = this.current + 1;
+                },
+                goToPhrase: function(phraseNumber) {
+                    const targetIndex = phraseNumber - 1;
+                    if (targetIndex >= 0 && targetIndex < this.total) {
+                        this.current = targetIndex;
+                        this.updateClasses();
+                    }
+                },
+                goNext: function() {
+                    if (this.total === 0) return;
+                    this.current = (this.current + 1) % this.total;
+                    this.updateClasses();
+                },
+                goPrev: function() {
+                    if (this.total === 0) return;
+                    this.current = (this.current - 1 + this.total) % this.total;
+                    this.updateClasses();
+                },
                 addCard: function(doc) {
                     const newCard = document.createElement('div');
                     newCard.className = 'phrase-card';
-                    newCard.dataset.docId = doc.$id;
+                    newCard.dataset.id = doc.$id;
 
                     const userHTML = doc.user ? `<div class="phrase-user">@${doc.user}</div>` : '';
                     const textHTML = `<div class="phrase-text">${doc.text.replace(/\n/g, '<br>')}</div>`;
                     
-                    const isLiked = anonymousUser && doc.liked_by && doc.liked_by.includes(anonymousUser.$id);
+                    const likedPhrases = JSON.parse(localStorage.getItem('likedPhrases') || '[]');
+                    const isLiked = likedPhrases.includes(doc.$id);
 
-                    const footerHTML = `
-                        <div class="phrase-card-footer">
-                            <button class="like-btn ${isLiked ? 'liked' : ''}" aria-label="Like">❤</button>
-                            <span class="likes-counter">${doc.likes || 0}</span>
-                        </div>`;
+                    const likeHTML = `
+                        <div class="phrase-actions">
+                            <button class="like-btn ${isLiked ? 'liked' : ''}" aria-label="Like phrase">
+                                <svg viewBox="0 0 24 24" fill="${isLiked ? 'var(--neon-pink)' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                            <span class="like-count">${doc.likes || 0}</span>
+                        </div>
+                    `;
 
-                    newCard.innerHTML = userHTML + textHTML + footerHTML;
-                    slider.appendChild(newCard);
-                    
-                    const likeBtn = newCard.querySelector('.like-btn');
-                    const likesCounter = newCard.querySelector('.likes-counter');
-                    likeBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        handleLike(doc.$id, likeBtn, likesCounter);
-                    });
+                    newCard.innerHTML = userHTML + textHTML + likeHTML;
+                    this.slider.appendChild(newCard);
+                },
+                onTouchStart: function(e) { this.startX = e.touches[0].clientX; },
+                onTouchMove: function(e) {
+                    if (this.startX === null) return;
+                    const diff = e.touches[0].clientX - this.startX;
+                    if (Math.abs(diff) > 40) {
+                        if (diff < 0) this.goNext();
+                        else this.goPrev();
+                        this.startX = null;
+                    }
+                },
+                onTouchEnd: function() { this.startX = null; },
+                handleLikeClick: async function(e) {
+                    const likeBtn = e.target.closest('.like-btn');
+                    if (!likeBtn) return;
+
+                    const card = likeBtn.closest('.phrase-card');
+                    const phraseId = card.dataset.id;
+                    if (!phraseId || phraseId === 'default' || phraseId === 'error') return;
+
+                    const likedPhrases = JSON.parse(localStorage.getItem('likedPhrases') || '[]');
+                    const likeCountSpan = card.querySelector('.like-count');
+                    const likeIcon = likeBtn.querySelector('svg');
+                    let currentLikes = parseInt(likeCountSpan.textContent);
+
+                    if (likedPhrases.includes(phraseId)) {
+                        // Unlike
+                        likeBtn.classList.remove('liked');
+                        likeIcon.setAttribute('fill', 'none');
+                        const index = likedPhrases.indexOf(phraseId);
+                        likedPhrases.splice(index, 1);
+                        currentLikes = Math.max(0, currentLikes - 1);
+                    } else {
+                        // Like
+                        likeBtn.classList.add('liked');
+                        likeIcon.setAttribute('fill', 'var(--neon-pink)');
+                        likedPhrases.push(phraseId);
+                        currentLikes++;
+                    }
+
+                    localStorage.setItem('likedPhrases', JSON.stringify(likedPhrases));
+                    likeCountSpan.textContent = currentLikes;
+
+                    try {
+                        await databases.updateDocument(
+                            DATABASE_ID,
+                            PHRASES_COLLECTION_ID,
+                            phraseId,
+                            { likes: currentLikes }
+                        );
+                    } catch (error) {
+                        console.error('Failed to update likes:', error);
+                    }
+                },
+                bindEvents: function() {
+                    this.nextBtn.addEventListener('click', () => this.goNext());
+                    this.prevBtn.addEventListener('click', () => this.goPrev());
+                    if (this.searchInput) {
+                        this.searchInput.addEventListener('input', (e) => {
+                            const value = parseInt(e.target.value);
+                            if (!isNaN(value)) this.goToPhrase(value);
+                        });
+                        this.searchInput.addEventListener('keypress', (e) => {
+                            if (e.key === 'Enter') e.target.blur();
+                        });
+                    }
+                    this.slider.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: true });
+                    this.slider.addEventListener('touchmove', (e) => this.onTouchMove(e), { passive: true });
+                    this.slider.addEventListener('touchend', () => this.onTouchEnd(), { passive: true });
+                    this.slider.addEventListener('click', (e) => this.handleLikeClick(e));
                 }
-                // ... other slider functions
-            };
-            // (The full sliderManager object will be here)
-            
-            // --- Form & Submission Logic ---
-            const showFormMessage = (message, isError = false) => {
-                const msgEl = document.getElementById('form-message');
-                msgEl.textContent = message;
-                msgEl.style.color = isError ? 'var(--danger)' : 'var(--success)';
-                msgEl.style.display = 'block';
-                setTimeout(() => { msgEl.style.display = 'none'; }, 4000);
             };
 
-            const handleSubmitPhrase = async (text, user) => {
+            const cooldownManager = {
+                cooldownInterval: null,
+                startCooldown: function() {
+                    const cooldownMs = phraseSettings ? getCooldownMilliseconds(phraseSettings.phraseRateLimit, phraseSettings.phraseRateLimitUnit) : 24 * 60 * 60 * 1000;
+                    const endTime = new Date().getTime() + cooldownMs;
+                    localStorage.setItem('phraseCooldownEnd', endTime);
+                    this.checkAndApply();
+                },
+                updateDisplay: function(remainingTime) {
+                    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+                    countdownTimerEl.innerHTML = `يمكنك الإرسال مرة أخرى بعد: ${hours} س و ${minutes} د و ${seconds} ث`;
+                },
+                checkAndApply: function() {
+                    const endTime = localStorage.getItem('phraseCooldownEnd');
+                    if (this.cooldownInterval) clearInterval(this.cooldownInterval);
+
+                    if (!endTime) {
+                        countdownTimerEl.style.display = 'none';
+                        if (!showFormBtn.disabled) showFormBtn.style.display = 'block';
+                        return;
+                    }
+
+                    const now = new Date().getTime();
+                    const remainingTime = endTime - now;
+
+                    if (remainingTime <= 0) {
+                        localStorage.removeItem('phraseCooldownEnd');
+                        this.checkAndApply();
+                    } else {
+                        showFormBtn.style.display = 'none';
+                        addForm.classList.add('hidden');
+                        countdownTimerEl.style.display = 'block';
+                        
+                        this.updateDisplay(remainingTime);
+                        this.cooldownInterval = setInterval(() => {
+                            const now = new Date().getTime();
+                            const remaining = endTime - now;
+                            if (remaining <= 0) {
+                                localStorage.removeItem('phraseCooldownEnd');
+                                this.checkAndApply();
+                            } else {
+                                this.updateDisplay(remaining);
+                            }
+                        }, 1000);
+                    }
+                }
+            };
+
+            let inactivityTimer = null;
+            const toggleForm = (show) => {
+                addForm.classList.toggle('hidden', !show);
+                showFormBtn.classList.toggle('hidden', show);
+            };
+
+            const validateUser = (username) => {
+                newPhraseUser.classList.remove('input-error');
+                userError.textContent = '';
+                if (!username) { userError.textContent = 'اسم المستخدم إجباري.'; newPhraseUser.classList.add('input-error'); return false; }
+                if (username.length < 3) { userError.textContent = 'يجب ألا يقل الاسم عن 3 أحرف.'; newPhraseUser.classList.add('input-error'); return false; }
+                if (username.length > 15) { userError.textContent = 'يجب ألا يزيد الاسم عن 15 حرفًا.'; newPhraseUser.classList.add('input-error'); return false; }
+                if (/[؀-ۿ]/.test(username)) { userError.textContent = 'يجب أن يكون اسم المستخدم باللغة الإنجليزية.'; newPhraseUser.classList.add('input-error'); return false; }
+                if (/(.)\1{2,}/.test(username)) { userError.textContent = 'لا يمكن تكرار الحرف أكثر من مرتين متتاليتين.'; newPhraseUser.classList.add('input-error'); return false; }
+                return true;
+            };
+
+            const validatePhrase = (text) => {
+                 newPhraseText.classList.remove('input-error');
+                phraseError.textContent = '';
+                if (text.length < 10) { phraseError.textContent = 'يجب ألا تقل العبارة عن 10 أحرف.'; newPhraseText.classList.add('input-error'); return false; }
+                 if (text.length > 150) { phraseError.textContent = 'يجب ألا تزيد العبارة عن 150 حرف.'; newPhraseText.classList.add('input-error'); return false; }
+                return true;
+            };
+            
+            showFormBtn.addEventListener('click', () => toggleForm(true));
+            cancelBtn.addEventListener('click', () => toggleForm(false));
+            
+            newPhraseUser.addEventListener('input', () => {
+                validateUser(newPhraseUser.value.trim());
+                const username = newPhraseUser.value.trim();
+                previewPhraseUser.style.display = username.length > 0 ? 'block' : 'none';
+                previewPhraseUser.textContent = `@${username}`;
+            });
+
+            newPhraseText.addEventListener('input', () => {
+                const text = newPhraseText.value.trim();
+                validatePhrase(text);
+                previewPhraseText.textContent = text.length > 0 ? text : 'هنا ستظهر عبارتك قبل النشر.';
+                sliderManager.fitTextToCard(previewPhraseCard);
+            });
+
+            addPhraseBtn.addEventListener('click', () => {
+                const text = newPhraseText.value.trim();
+                const user = newPhraseUser.value.trim();
                 if (!validateUser(user) || !validatePhrase(text)) return;
                 
-                const submitBtn = document.getElementById('addPhraseBtn');
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'جارٍ الإرسال...';
+                addPhraseBtn.disabled = true;
+                addPhraseBtn.textContent = 'جارٍ الإرسال...';
                 
-                try {
-                    await databases.createDocument(DATABASE_ID, PHRASES_COLLECTION_ID, ID.unique(), {
-                        text,
-                        user,
-                        is_approved: false,
-                        likes: 0,
-                        liked_by: []
-                    });
-                    toggleForm(false);
-                    showFormMessage("تم إرسال عبارتك للمراجعة. شكراً لك!");
-                    cooldownManager.startCooldown();
-                } catch (error) {
-                    console.error("Failed to create phrase:", error);
-                    validatePhrase(text, true, 'حدث خطأ غير متوقع. حاول مرة أخرى.');
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'إرسال';
-                }
-            };
+                const data = {
+                    text,
+                    user,
+                    approved: false, // Phrases are not approved by default
+                    likes: 0
+                };
 
-            // ... validation functions, toggleForm, etc.
+                databases.createDocument(DATABASE_ID, PHRASES_COLLECTION_ID, ID.unique(), data)
+                    .then(response => {
+                        newPhraseText.value = '';
+                        newPhraseUser.value = '';
+                        toggleForm(false);
+                        cooldownManager.startCooldown();
+                        alert('تم إرسال عبارتك بنجاح وهي الآن في انتظار المراجعة.');
+                    })
+                    .catch(error => {
+                        console.error("Failed to add phrase:", error);
+                        phraseError.textContent = 'حدث خطأ. حاول مرة أخرى.';
+                    })
+                    .finally(() => {
+                        addPhraseBtn.disabled = false;
+                        addPhraseBtn.textContent = 'إرسال';
+                    });
+            });
+
+            // --- Screenshot Mode ---
+            document.getElementById('cameraBtn')?.addEventListener('click', () => document.body.classList.toggle('screenshot-mode'));
+            document.getElementById('screenshotCloseBtn')?.addEventListener('click', () => document.body.classList.remove('screenshot-mode'));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && document.body.classList.contains('screenshot-mode')) {
+                    document.body.classList.remove('screenshot-mode');
+                }
+            });
+
+            // --- Appwrite Functions ---
+            async function loadPhrases() {
+                try {
+                    const response = await databases.listDocuments(DATABASE_ID, PHRASES_COLLECTION_ID, [
+                        Query.equal('approved', true), 
+                        Query.orderDesc("$createdAt")
+                    ]);
+                    sliderManager.slider.innerHTML = '';
+                    if (response.documents.length > 0) {
+                        response.documents.forEach(doc => sliderManager.addCard(doc));
+                    } else {
+                        sliderManager.addCard({
+                            $id: 'default',
+                            text: 'لا توجد عبارات حالياً. كن أول من يضيف واحدة!',
+                            user: 'النظام',
+                            likes: 0
+                        });
+                    }
+                } catch (error) {
+                    console.error("Failed to load phrases:", error);
+                    sliderManager.addCard({
+                        $id: 'error',
+                        text: 'حدث خطأ أثناء تحميل العبارات.',
+                        user: 'النظام',
+                        likes: 0
+                    });
+                }
+            }
+
+            function getCooldownMilliseconds(value, unit) {
+                if (!value || !unit) return 24 * 60 * 60 * 1000;
+                const val = parseInt(value, 10);
+                switch (unit) {
+                    case 'minutes': return val * 60 * 1000;
+                    case 'hours': return val * 60 * 60 * 1000;
+                    case 'days': return val * 24 * 60 * 60 * 1000;
+                    default: return 24 * 60 * 60 * 1000;
+                }
+            }
+
+            async function loadAndApplySettings() {
+                try {
+                    const response = await databases.listDocuments(DATABASE_ID, PHRASES_COLLECTION_ID, [Query.exists('photographyMode'), Query.limit(1)]);
+                    if (response.documents.length > 0) {
+                        const settings = response.documents[0];
+                        phraseSettings = settings;
+
+                        const phrasesSectionEl = document.querySelector('.phrases-section');
+                        const addPhraseSectionEl = document.querySelector('.add-phrase-section');
+
+                        if (settings.photographyMode === false) document.getElementById('cameraBtn')?.remove();
+                        if (settings.showPhraseCards === false) phrasesSectionEl?.remove();
+                        
+                        if (addPhraseSectionEl) {
+                             if (settings.showAddPhraseButton === false) {
+                                addPhraseSectionEl.remove();
+                             } else if (settings.lockAddPhraseButton === true) {
+                                showFormBtn.disabled = true;
+                                showFormBtn.textContent = 'إضافة العبارات مقفلة حالياً';
+                                showFormBtn.style.cursor = 'not-allowed';
+                                showFormBtn.style.color = '#9ca3af';
+                                showFormBtn.style.borderColor = '#374151';
+                                showFormBtn.style.background = 'transparent';
+                             }
+                        }
+
+                        const cooldownTextP = addPhraseSectionEl?.querySelector('p');
+                        if (cooldownTextP && settings.phraseRateLimit && settings.phraseRateLimitUnit) {
+                             const unitText = { minutes: 'دقائق', hours: 'ساعات', days: 'أيام' }[settings.phraseRateLimitUnit] || 'فترة';
+                             cooldownTextP.textContent = `يحق لكل شخص نشر عبارة واحدة كل ${settings.phraseRateLimit} ${unitText}.`;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to load settings:", error);
+                }
+            }
 
             // --- Initialisation ---
             async function initializePage() {
-                anonymousUser = await getAnonymousUser();
                 await loadAndApplySettings();
                 await loadPhrases();
                 sliderManager.init();
                 cooldownManager.checkAndApply();
             }
-
-            async function loadPhrases() {
-                try {
-                    const response = await databases.listDocuments(DATABASE_ID, PHRASES_COLLECTION_ID, [Query.equal('is_approved', true), Query.orderDesc("$createdAt")]);
-                    phraseDocs = response.documents;
-                    slider.innerHTML = '';
-                    if (phraseDocs.length > 0) {
-                        phraseDocs.forEach(doc => sliderManager.addCard(doc));
-                    } else {
-                        sliderManager.addCard({ text: 'لا توجد عبارات حالياً. كن أول من يضيف واحدة!', user: 'النظام', likes: 0, liked_by: [] });
-                    }
-                } catch (error) {
-                    console.error("Failed to load phrases:", error);
-                }
-            }
-            
-            // ... all other functions from the previous version
 
             initializePage();
         });
