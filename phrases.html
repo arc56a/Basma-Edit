@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>بصمة - العبارات</title>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
     <style>
         :root {
             --neon-blue: #0ff;
@@ -831,6 +832,18 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- Appwrite Configuration ---
+            const APPWRITE_ENDPOINT = "https://fra.cloud.appwrite.io/v1";
+            const APPWRITE_PROJECT_ID = "basmaedit56";
+            const DATABASE_ID = "693b73ab003790d00cf3";
+            const PHRASES_COLLECTION_ID = "phrases_section"; // For both settings and phrases
+
+            const { ID, Query, Client, Databases } = window.Appwrite;
+            const client = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
+            const databases = new Databases(client);
+
+            let phraseSettings = null;
+
             // --- DOM Elements ---
             const showFormBtn = document.getElementById('showAddFormBtn');
             const addForm = document.getElementById('addPhraseForm');
@@ -864,9 +877,9 @@
                     this.updateClasses();
                 },
                 updateCardList: function() {
-                    this.cards = Array.prototype.slice.call(this.slider.querySelectorAll('.phrase-card'));
+                    this.cards = Array.from(this.slider.querySelectorAll('.phrase-card'));
                     this.total = this.cards.length;
-                    if (this.totalSpan) this.totalSpan.textContent = this.total;
+                    if (this.totalSpan) this.totalSpan.textContent = this.total > 0 ? this.total : '0';
                     if (this.searchInput) this.searchInput.max = this.total;
                 },
                 fitTextToCard: function(cardElement) {
@@ -883,6 +896,11 @@
                     }
                 },
                 updateClasses: function() {
+                    if (this.total === 0) {
+                        if (this.currentSpan) this.currentSpan.textContent = '0';
+                        if (this.searchInput) this.searchInput.value = '';
+                        return;
+                    }
                     this.cards.forEach(card => {
                         const textElement = card.querySelector('.phrase-text');
                         if (textElement) textElement.style.fontSize = '';
@@ -909,10 +927,12 @@
                     }
                 },
                 goNext: function() {
+                    if (this.total === 0) return;
                     this.current = (this.current + 1) % this.total;
                     this.updateClasses();
                 },
                 goPrev: function() {
+                    if (this.total === 0) return;
                     this.current = (this.current - 1 + this.total) % this.total;
                     this.updateClasses();
                 },
@@ -920,12 +940,9 @@
                     const newCard = document.createElement('div');
                     newCard.className = 'phrase-card';
                     let userHTML = user ? `<div class="phrase-user">@${user}</div>` : '';
-                    const textHTML = `<div class="phrase-text">${text}</div>`;
+                    const textHTML = `<div class="phrase-text">${text.replace(/\n/g, '<br>')}</div>`;
                     newCard.innerHTML = userHTML + textHTML;
                     this.slider.appendChild(newCard);
-                    this.updateCardList();
-                    this.current = this.total - 1;
-                    this.updateClasses();
                 },
                 onTouchStart: function(e) { this.startX = e.touches[0].clientX; },
                 onTouchMove: function(e) {
@@ -947,10 +964,7 @@
                             if (!isNaN(value)) this.goToPhrase(value);
                         });
                         this.searchInput.addEventListener('keypress', (e) => {
-                            if (e.key === 'Enter') {
-                                const value = parseInt(e.target.value);
-                                if (!isNaN(value)) this.goToPhrase(value);
-                            }
+                            if (e.key === 'Enter') e.target.blur();
                         });
                     }
                     this.slider.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: true });
@@ -962,7 +976,8 @@
             const cooldownManager = {
                 cooldownInterval: null,
                 startCooldown: function() {
-                    const endTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+                    const cooldownMs = phraseSettings ? getCooldownMilliseconds(phraseSettings.phraseRateLimit, phraseSettings.phraseRateLimitUnit) : 24 * 60 * 60 * 1000;
+                    const endTime = new Date().getTime() + cooldownMs;
                     localStorage.setItem('phraseCooldownEnd', endTime);
                     this.checkAndApply();
                 },
@@ -978,10 +993,7 @@
 
                     if (!endTime) {
                         countdownTimerEl.style.display = 'none';
-                        showFormBtn.style.display = 'block';
-                        newPhraseText.disabled = false;
-                        newPhraseUser.disabled = false;
-                        addPhraseBtn.disabled = false;
+                        if (!showFormBtn.disabled) showFormBtn.style.display = 'block';
                         return;
                     }
 
@@ -995,9 +1007,6 @@
                         showFormBtn.style.display = 'none';
                         addForm.classList.add('hidden');
                         countdownTimerEl.style.display = 'block';
-                        newPhraseText.disabled = true;
-                        newPhraseUser.disabled = true;
-                        addPhraseBtn.disabled = true;
                         
                         this.updateDisplay(remainingTime);
                         this.cooldownInterval = setInterval(() => {
@@ -1013,165 +1022,159 @@
                     }
                 }
             };
-            
-            // --- Form Logic ---
+
             let inactivityTimer = null;
-
-            const phrasesSection = document.querySelector('.phrases-section');
-            const addSection = document.querySelector('.add-phrase-section');
-
             const toggleForm = (show) => {
-                const isCooldownActive = !!localStorage.getItem('phraseCooldownEnd');
-                if (show && isCooldownActive) return;
-
                 addForm.classList.toggle('hidden', !show);
                 showFormBtn.classList.toggle('hidden', show);
-                if (phrasesSection) {
-                    phrasesSection.style.display = 'flex';
-                }
-                
-                if (show) {
-                    clearTimeout(inactivityTimer);
-                    inactivityTimer = setTimeout(() => toggleForm(false), 10000);
-                    if (addSection) {
-                        addSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                } else {
-                    clearTimeout(inactivityTimer);
-                    userError.textContent = '';
-                    phraseError.textContent = '';
-                    newPhraseUser.classList.remove('input-error');
-                    newPhraseText.classList.remove('input-error');
-                    if (previewPhraseText) {
-                        previewPhraseText.textContent = 'هنا ستظهر عبارتك قبل النشر.';
-                    }
-                    if (previewPhraseUser) {
-                        previewPhraseUser.style.display = 'none';
-                        previewPhraseUser.textContent = '@username';
-                    }
-                }
-            };
-            
-            const resetInactivityTimer = () => {
-                if (!addForm.classList.contains('hidden')) {
-                    clearTimeout(inactivityTimer);
-                    inactivityTimer = setTimeout(() => toggleForm(false), 10000);
-                }
             };
 
             const validateUser = (username) => {
                 newPhraseUser.classList.remove('input-error');
                 userError.textContent = '';
-                if (!username) {
-                    userError.textContent = 'اسم المستخدم إجباري.';
-                    newPhraseUser.classList.add('input-error');
-                    return false;
-                }
-                if (username.length < 3) {
-                    userError.textContent = 'يجب ألا يقل الاسم عن 3 أحرف.';
-                    newPhraseUser.classList.add('input-error');
-                    return false;
-                }
-                if (username.length > 15) {
-                    userError.textContent = 'يجب ألا يزيد الاسم عن 15 حرفًا.';
-                    newPhraseUser.classList.add('input-error');
-                    return false;
-                }
-                if (/[\u0600-\u06FF]/.test(username)) {
-                    userError.textContent = 'يجب أن يكون اسم المستخدم باللغة الإنجليزية.';
-                    newPhraseUser.classList.add('input-error');
-                    return false;
-                }
-                if (/(.)\1{2,}/.test(username)) {
-                    userError.textContent = 'لا يمكن تكرار الحرف أكثر من مرتين متتاليتين.';
-                    newPhraseUser.classList.add('input-error');
-                    return false;
-                }
+                if (!username) { userError.textContent = 'اسم المستخدم إجباري.'; newPhraseUser.classList.add('input-error'); return false; }
+                if (username.length < 3) { userError.textContent = 'يجب ألا يقل الاسم عن 3 أحرف.'; newPhraseUser.classList.add('input-error'); return false; }
+                if (username.length > 15) { userError.textContent = 'يجب ألا يزيد الاسم عن 15 حرفًا.'; newPhraseUser.classList.add('input-error'); return false; }
+                if (/[\u0600-\u06FF]/.test(username)) { userError.textContent = 'يجب أن يكون اسم المستخدم باللغة الإنجليزية.'; newPhraseUser.classList.add('input-error'); return false; }
+                if (/(.)\1{2,}/.test(username)) { userError.textContent = 'لا يمكن تكرار الحرف أكثر من مرتين متتاليتين.'; newPhraseUser.classList.add('input-error'); return false; }
                 return true;
             };
 
             const validatePhrase = (text) => {
                  newPhraseText.classList.remove('input-error');
                 phraseError.textContent = '';
-                if (text.length < 10) {
-                    phraseError.textContent = 'يجب ألا تقل العبارة عن 10 أحرف.';
-                    newPhraseText.classList.add('input-error');
-                    return false;
-                }
-                 if (text.length > 150) {
-                    phraseError.textContent = 'يجب ألا تزيد العبارة عن 150 حرف.';
-                    newPhraseText.classList.add('input-error');
-                    return false;
-                }
+                if (text.length < 10) { phraseError.textContent = 'يجب ألا تقل العبارة عن 10 أحرف.'; newPhraseText.classList.add('input-error'); return false; }
+                 if (text.length > 150) { phraseError.textContent = 'يجب ألا تزيد العبارة عن 150 حرف.'; newPhraseText.classList.add('input-error'); return false; }
                 return true;
             };
             
-            // --- Event Listeners ---
             showFormBtn.addEventListener('click', () => toggleForm(true));
             cancelBtn.addEventListener('click', () => toggleForm(false));
             
             newPhraseUser.addEventListener('input', () => {
                 validateUser(newPhraseUser.value.trim());
                 const username = newPhraseUser.value.trim();
-                if (previewPhraseUser) {
-                    if (username.length > 0) {
-                        previewPhraseUser.style.display = 'block';
-                        previewPhraseUser.textContent = `@${username}`;
-                    } else {
-                        previewPhraseUser.style.display = 'none';
-                        previewPhraseUser.textContent = '@username';
-                    }
-                }
-                resetInactivityTimer();
+                previewPhraseUser.style.display = username.length > 0 ? 'block' : 'none';
+                previewPhraseUser.textContent = `@${username}`;
             });
+
             newPhraseText.addEventListener('input', () => {
                 const text = newPhraseText.value.trim();
                 validatePhrase(text);
-                if (previewPhraseText) {
-                    previewPhraseText.textContent = text.length > 0 ? text : 'هنا ستظهر عبارتك قبل النشر.';
-                }
-                if (previewPhraseCard && typeof sliderManager.fitTextToCard === 'function') {
-                    sliderManager.fitTextToCard(previewPhraseCard);
-                }
-                resetInactivityTimer();
+                previewPhraseText.textContent = text.length > 0 ? text : 'هنا ستظهر عبارتك قبل النشر.';
+                sliderManager.fitTextToCard(previewPhraseCard);
             });
 
             addPhraseBtn.addEventListener('click', () => {
                 const text = newPhraseText.value.trim();
                 const user = newPhraseUser.value.trim();
-                const isUserValid = validateUser(user);
-                const isPhraseValid = validatePhrase(text);
+                if (!validateUser(user) || !validatePhrase(text)) return;
+                
+                addPhraseBtn.disabled = true;
+                addPhraseBtn.textContent = 'جارٍ الإرسال...';
 
-                if (isPhraseValid && isUserValid) {
-                    clearTimeout(inactivityTimer);
-                    sliderManager.addCard(text, user);
-                    newPhraseText.value = '';
-                    newPhraseUser.value = '';
-                    toggleForm(false);
-                    cooldownManager.startCooldown();
-                } else {
-                    resetInactivityTimer();
-                }
+                databases.createDocument(DATABASE_ID, PHRASES_COLLECTION_ID, ID.unique(), { text, user })
+                    .then(response => {
+                        sliderManager.addCard(text, user);
+                        sliderManager.updateCardList();
+                        sliderManager.goToPhrase(sliderManager.total);
+                        newPhraseText.value = '';
+                        newPhraseUser.value = '';
+                        toggleForm(false);
+                        cooldownManager.startCooldown();
+                    })
+                    .catch(error => {
+                        console.error("Failed to add phrase:", error);
+                        phraseError.textContent = 'حدث خطأ. حاول مرة أخرى.';
+                    })
+                    .finally(() => {
+                        addPhraseBtn.disabled = false;
+                        addPhraseBtn.textContent = 'إرسال';
+                    });
             });
 
-            // --- Other functionalities ---
-            const cameraBtn = document.getElementById('cameraBtn');
-            if (cameraBtn) {
-                cameraBtn.addEventListener('click', () => document.body.classList.toggle('screenshot-mode'));
-            }
-            const screenshotCloseBtn = document.getElementById('screenshotCloseBtn');
-            if (screenshotCloseBtn) {
-                screenshotCloseBtn.addEventListener('click', () => document.body.classList.remove('screenshot-mode'));
-            }
+            // --- Screenshot Mode ---
+            document.getElementById('cameraBtn')?.addEventListener('click', () => document.body.classList.toggle('screenshot-mode'));
+            document.getElementById('screenshotCloseBtn')?.addEventListener('click', () => document.body.classList.remove('screenshot-mode'));
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && document.body.classList.contains('screenshot-mode')) {
                     document.body.classList.remove('screenshot-mode');
                 }
             });
 
+            // --- Appwrite Functions ---
+            async function loadPhrases() {
+                try {
+                    const response = await databases.listDocuments(DATABASE_ID, PHRASES_COLLECTION_ID, [Query.exists('text'), Query.orderDesc("$createdAt")]);
+                    sliderManager.slider.innerHTML = '';
+                    if (response.documents.length > 0) {
+                        response.documents.forEach(doc => sliderManager.addCard(doc.text, doc.user));
+                    } else {
+                        sliderManager.addCard('لا توجد عبارات حالياً. كن أول من يضيف واحدة!', 'النظام');
+                    }
+                } catch (error) {
+                    console.error("Failed to load phrases:", error);
+                    sliderManager.addCard('حدث خطأ أثناء تحميل العبارات.', 'النظام');
+                }
+            }
+
+            function getCooldownMilliseconds(value, unit) {
+                if (!value || !unit) return 24 * 60 * 60 * 1000;
+                const val = parseInt(value, 10);
+                switch (unit) {
+                    case 'minutes': return val * 60 * 1000;
+                    case 'hours': return val * 60 * 60 * 1000;
+                    case 'days': return val * 24 * 60 * 60 * 1000;
+                    default: return 24 * 60 * 60 * 1000;
+                }
+            }
+
+            async function loadAndApplySettings() {
+                try {
+                    const response = await databases.listDocuments(DATABASE_ID, PHRASES_COLLECTION_ID, [Query.exists('photographyMode'), Query.limit(1)]);
+                    if (response.documents.length > 0) {
+                        const settings = response.documents[0];
+                        phraseSettings = settings;
+
+                        const phrasesSectionEl = document.querySelector('.phrases-section');
+                        const addPhraseSectionEl = document.querySelector('.add-phrase-section');
+
+                        if (settings.photographyMode === false) document.getElementById('cameraBtn')?.remove();
+                        if (settings.showPhraseCards === false) phrasesSectionEl?.remove();
+                        
+                        if (addPhraseSectionEl) {
+                             if (settings.showAddPhraseButton === false) {
+                                addPhraseSectionEl.remove();
+                             } else if (settings.lockAddPhraseButton === true) {
+                                showFormBtn.disabled = true;
+                                showFormBtn.textContent = 'إضافة العبارات مقفلة حالياً';
+                                showFormBtn.style.cursor = 'not-allowed';
+                                showFormBtn.style.color = '#9ca3af';
+                                showFormBtn.style.borderColor = '#374151';
+                                showFormBtn.style.background = 'transparent';
+                             }
+                        }
+
+                        const cooldownTextP = addPhraseSectionEl?.querySelector('p');
+                        if (cooldownTextP && settings.phraseRateLimit && settings.phraseRateLimitUnit) {
+                             const unitText = { minutes: 'دقائق', hours: 'ساعات', days: 'أيام' }[settings.phraseRateLimitUnit] || 'فترة';
+                             cooldownTextP.textContent = `يحق لكل شخص نشر عبارة واحدة كل ${settings.phraseRateLimit} ${unitText}.`;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to load settings:", error);
+                }
+            }
+
             // --- Initialisation ---
-            sliderManager.init();
-            cooldownManager.checkAndApply();
+            async function initializePage() {
+                await loadAndApplySettings();
+                await loadPhrases();
+                sliderManager.init();
+                cooldownManager.checkAndApply();
+            }
+
+            initializePage();
         });
     </script>
 </body>
