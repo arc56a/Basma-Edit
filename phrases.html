@@ -261,7 +261,6 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: url('images/fire-loop.webm');
             background-size: cover;
             background-position: center;
             filter: brightness(1.4) saturate(1.6) blur(1px);
@@ -1185,7 +1184,12 @@
                     user,
                     is_approved: false,
                     likes: 0,
-                    photographyMode: false
+                    photographyMode: false,
+                    showPhraseCards: false,
+                    showAddPhraseButton: false,
+                    lockAddPhraseButton: false,
+                    phraseRateLimit: 0,
+                    phraseRateLimitUnit: "minutes"
                 };
 
                 databases.createDocument(DATABASE_ID, PHRASES_COLLECTION_ID, ID.unique(), data)
@@ -1220,7 +1224,7 @@
                 try {
                     const response = await databases.listDocuments(DATABASE_ID, PHRASES_COLLECTION_ID, [
                         Query.equal('is_approved', true),
-                        Query.isNotNull('user'),
+                        Query.isNotNull('likes'),
                         Query.orderDesc("$createdAt")
                     ]);
                     sliderManager.slider.innerHTML = '';
@@ -1260,7 +1264,7 @@
                 try {
                     const response = await databases.listDocuments(DATABASE_ID, PHRASES_COLLECTION_ID, [
                         Query.isNotNull('photographyMode'),
-                        Query.isNull('user'),
+                        Query.isNull('likes'),
                         Query.orderAsc("$createdAt"),
                         Query.limit(1)
                     ]);
