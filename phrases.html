@@ -1183,9 +1183,8 @@
                 const data = {
                     text,
                     user,
-                    approved: false, // Phrases are not approved by default
-                    likes: 0,
-                    photographyMode: false // Add default value to fix error
+                    approved: false,
+                    likes: 0
                 };
 
                 databases.createDocument(DATABASE_ID, PHRASES_COLLECTION_ID, ID.unique(), data)
@@ -1219,7 +1218,8 @@
             async function loadPhrases() {
                 try {
                     const response = await databases.listDocuments(DATABASE_ID, PHRASES_COLLECTION_ID, [
-                        Query.equal('approved', true), 
+                        Query.equal('approved', true),
+                        Query.isNull('photographyMode'),
                         Query.orderDesc("$createdAt")
                     ]);
                     sliderManager.slider.innerHTML = '';
@@ -1258,7 +1258,7 @@
             async function loadAndApplySettings() {
                 try {
                     const response = await databases.listDocuments(DATABASE_ID, PHRASES_COLLECTION_ID, [
-                        Query.exists('photographyMode'),
+                        Query.isNotNull('photographyMode'),
                         Query.orderAsc("$createdAt"),
                         Query.limit(1)
                     ]);
