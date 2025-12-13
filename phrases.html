@@ -1184,7 +1184,8 @@
                     text,
                     user,
                     approved: false, // Phrases are not approved by default
-                    likes: 0
+                    likes: 0,
+                    photographyMode: false // Add default value to fix error
                 };
 
                 databases.createDocument(DATABASE_ID, PHRASES_COLLECTION_ID, ID.unique(), data)
@@ -1256,7 +1257,11 @@
 
             async function loadAndApplySettings() {
                 try {
-                    const response = await databases.listDocuments(DATABASE_ID, PHRASES_COLLECTION_ID, [Query.exists('photographyMode'), Query.limit(1)]);
+                    const response = await databases.listDocuments(DATABASE_ID, PHRASES_COLLECTION_ID, [
+                        Query.exists('photographyMode'),
+                        Query.orderAsc("$createdAt"),
+                        Query.limit(1)
+                    ]);
                     if (response.documents.length > 0) {
                         const settings = response.documents[0];
                         phraseSettings = settings;
