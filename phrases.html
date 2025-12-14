@@ -1278,12 +1278,9 @@
                 previewPhraseUser.style.display = username.length > 0 ? 'flex' : 'none'; // Changed to flex for proper alignment with badge
                 
                 let userHtmlContent = `<span style="opacity: 0.4;">@${username}</span>`;
-                if (username.toLowerCase() === CONTROL_PANEL_USERNAME.toLowerCase()) {
-                    previewPhraseUser.classList.add('admin');
-                    userHtmlContent += '<img src="images/verify.png" class="admin-badge" alt="Verified">';
-                } else {
-                    previewPhraseUser.classList.remove('admin');
-                }
+                // A new phrase in preview should not show a verification mark for the user.
+                // The verification mark is for the phrase's approval status, not the user's admin status.
+                // previewPhraseUser.classList.remove('admin'); // Ensure no admin class is added for preview
                 previewPhraseUser.innerHTML = userHtmlContent; // Use innerHTML to render SVG
             });
 
