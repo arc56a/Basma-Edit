@@ -308,16 +308,15 @@
         }
 
         .phrase-user.admin {
-            color: var(--neon-blue); /* Neon blue for admin users */
-            opacity: 1;
-            text-shadow: 0 0 8px var(--neon-blue);
+            /* نفس لون وشفافية الاسم العادي، التمييز يكون فقط بعلامة التوثيق */
         }
 
         .admin-badge {
             width: 14px;
             height: 14px;
-            fill: #007bff; /* Blue fill for the badge */
+            background: url('images/verify.png') center/contain no-repeat;
             flex-shrink: 0; /* Prevent badge from shrinking */
+            object-fit: contain;
         }
 
         /* شرار نار */
