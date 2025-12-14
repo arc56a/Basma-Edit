@@ -866,9 +866,7 @@
                     </div>
                 </div>
             </div>
-            <p style="font-size: 0.8rem; color: rgba(255, 255, 255, 0.6); margin-top: 15px;">
-                يحق لكل شخص نشر عبارة واحدة كل 24 ساعة.
-            </p>
+            
         </div>
     </div>
     
@@ -1293,12 +1291,6 @@
                              } else if (settings.lockAddPhraseButton === true) {
                                 disableForm('إضافة العبارات مقفلة حالياً');
                              }
-                        }
-
-                        const cooldownTextP = addPhraseSectionEl?.querySelector('p');
-                        if (cooldownTextP && settings.phraseRateLimit && settings.phraseRateLimitUnit) {
-                             const unitText = { minutes: 'دقائق', hours: 'ساعات', days: 'أيام' }[settings.phraseRateLimitUnit] || 'فترة';
-                             cooldownTextP.textContent = `يحق لكل شخص نشر عبارة واحدة كل ${settings.phraseRateLimit} ${unitText}.`;
                         }
                     } else {
                         console.error("No settings document found.");
