@@ -1034,18 +1034,19 @@
                     newCard.className = 'phrase-card';
                     newCard.dataset.id = doc.$id;
 
-                    let userHTML = '';
+                    let userContent = '';
+                    let userClasses = 'phrase-user';
+                    let adminBadgeSvg = '';
+
                     if (doc.user) {
-                        const userDiv = document.createElement('div');
-                        userDiv.className = 'phrase-user';
-                        let usernameText = `@${doc.user}`;
                         if (doc.isAdmin) {
-                            userDiv.classList.add('admin');
-                            usernameText += ' <svg class="admin-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+                            userClasses += ' admin';
+                            adminBadgeSvg = '<svg class="admin-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
                         }
-                        userDiv.innerHTML = usernameText;
-                        userHTML = userDiv.outerHTML;
+                        userContent = `@${doc.user}${adminBadgeSvg}`;
                     }
+
+                    const userHTML = `<div class="${userClasses}">${userContent}</div>`;
 
                     const textHTML = `<div class="phrase-text">${doc.text.replace(/\n/g, '<br>')}</div>`;
                     
@@ -1065,8 +1066,7 @@
 
                     newCard.innerHTML = userHTML + textHTML + likeHTML;
                     this.slider.appendChild(newCard);
-                },
-                onTouchStart: function(e) { this.startX = e.touches[0].clientX; },
+                },                onTouchStart: function(e) { this.startX = e.touches[0].clientX; },
                 onTouchMove: function(e) {
                     if (this.startX === null) return;
                     const diff = e.touches[0].clientX - this.startX;
@@ -1420,27 +1420,37 @@
                     if (remainingTime <= 0) {
                         localStorage.removeItem('phraseCooldownEnd');
                         this.checkAndApply();
-                    } else {
-                        showFormBtn.style.display = 'none'; // Hide the original button
-                        if (lockedMessage) lockedMessage.classList.add('hidden'); // Hide locked message
-                        addForm.classList.add('hidden'); // Hide the add phrase form
-                        countdownTimerEl.style.display = 'block'; // Show the countdown timer
-                        
-                        this.updateDisplay(remainingTime);
-                        this.cooldownInterval = setInterval(() => {
-                            const now = new Date().getTime();
-                            const remaining = endTime - now;
-                            if (remaining <= 0) {
-                                localStorage.removeItem('phraseCooldownEnd');
-                                this.checkAndApply();
-                            } else {
-                                this.updateDisplay(remaining);
-                            }
-                        }, 1000);
-                    }
-                }
-            };
-        });
-    </script>
-</body>
-</html>
+                                        } else {
+                                            showFormBtn.style.display = 'none'; // Hide the original button
+                                            if (lockedMessage) lockedMessage.classList.add('hidden'); // Hide locked message
+                                            addForm.classList.add('hidden'); // Hide the add phrase form
+                                            countdownTimerEl.style.display = 'block'; // Show the countdown timer
+                                            
+                                            this.updateDisplay(remainingTime); // Update the display immediately
+                                            this.cooldownInterval = setInterval(() => {
+                                                const now = new Date().getTime();
+                                                const remaining = endTime - now;
+                                                if (remaining <= 0) {
+                                                    localStorage.removeItem('phraseCooldownEnd');
+                                                    this.checkAndApply();
+                                                } else {
+                                                    this.updateDisplay(remaining);
+                                                }
+                                            }, 1000);
+                                        }
+                                    }
+                                }; // Closing brace for cooldownManager
+
+                                // --- Initialisation ---
+                                async function initializePage() {
+                                    await loadAndApplySettings();
+                                    await loadPhrases();
+                                    sliderManager.init();
+                                    cooldownManager.checkAndApply();
+                                }
+
+                                initializePage(); // Call initializePage
+                            }); // Closing brace for DOMContentLoaded
+                        </script>
+                    </body>
+                    </html>
