@@ -1382,4 +1382,79 @@
                     console.error("Failed to load settings:", error);
                     disableFormVisuals();
                 }
+            } // End of loadAndApplySettings function
+
+            const cooldownManager = {
+                cooldownInterval: null,
+                startCooldown: function() {
+                    if (!phraseSettings || typeof phraseSettings.phraseRateLimit === 'undefined' || !phraseSettings.phraseRateLimitUnit) {
+                        console.error("Cannot start cooldown, settings are missing or incomplete.");
+                        return;
+                    }
+                    const cooldownMs = getCooldownMilliseconds(phraseSettings.phraseRateLimit, phraseSettings.phraseRateLimitUnit);
+                    if (cooldownMs <= 0) return;
+                    
+                    const endTime = new Date().getTime() + cooldownMs;
+                    localStorage.setItem('phraseCooldownEnd', endTime);
+                    this.checkAndApply();
+                },
+                updateDisplay: function(remainingTime) {
+                    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+                    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+                    countdownTimerEl.innerHTML = `يمكنك الإرسال مرة أخرى بعد: ${hours} س و ${minutes} د و ${seconds} ث`;
+                },
+                checkAndApply: function() {
+                    const endTime = localStorage.getItem('phraseCooldownEnd');
+                    if (this.cooldownInterval) clearInterval(this.cooldownInterval);
+
+                    if (!endTime) {
+                        countdownTimerEl.style.display = 'none';
+                        if (phraseSettings && phraseSettings.lockAddPhraseButton === true) {
+                            disableFormVisuals();
+                        } else {
+                            enableFormVisuals();
+                        }
+                        return;
+                    }
+
+                    const now = new Date().getTime();
+                    const remainingTime = endTime - now;
+
+                    if (remainingTime <= 0) {
+                        localStorage.removeItem('phraseCooldownEnd');
+                        this.checkAndApply();
+                    } else {
+                        showFormBtn.style.display = 'none'; // Hide the original button
+                        if (lockedMessage) lockedMessage.classList.add('hidden'); // Hide locked message
+                        addForm.classList.add('hidden'); // Hide the add phrase form
+                        countdownTimerEl.style.display = 'block'; // Show the countdown timer
+                        
+                        this.updateDisplay(remainingTime); // Update the display immediately
+                        this.cooldownInterval = setInterval(() => {
+                            const now = new Date().getTime();
+                            const remaining = endTime - now;
+                            if (remaining <= 0) {
+                                localStorage.removeItem('phraseCooldownEnd');
+                                this.checkAndApply();
+                            } else {
+                                this.updateDisplay(remaining);
+                            }
+                        }, 1000);
+                    }
+                }
+            }; // Closing brace for cooldownManager
+
+            // --- Initialisation ---
+            async function initializePage() {
+                await loadAndApplySettings();
+                await loadPhrases();
+                sliderManager.init();
+                cooldownManager.checkAndApply();
             }
+
+            initializePage(); // Call initializePage
+        }); // Closing brace for DOMContentLoaded
+    </script>
+</body>
+</html>
