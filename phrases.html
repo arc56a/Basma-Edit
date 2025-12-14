@@ -1040,13 +1040,16 @@
                     let adminBadgeSvg = '';
 
                     if (doc.user) {
-                        let verificationBadge = '';
-                        // If the phrase is approved, display a verification mark
-                        if (doc.is_approved) {
-                            verificationBadge = '<img src="images/verify.png" class="admin-badge" alt="Verified Phrase">';
+                        let verificationBadges = '';
+                        // Check if the user is the Control Panel user OR if the phrase document explicitly marks the user as admin/verified
+                        // The `doc.isAdmin` field needs to exist in the Appwrite collection for this to work.
+                        const isUserVerifiedInDoc = doc.isAdmin === true; // Assuming 'isAdmin' is a boolean field in the collection
+                        const isControlPanelUser = doc.user.toLowerCase() === CONTROL_PANEL_USERNAME.toLowerCase();
+
+                        if (isUserVerifiedInDoc || isControlPanelUser) {
+                            verificationBadges = '<img src="images/verify.png" class="admin-badge" alt="Verified User">';
                         }
-                        // Original user display, now including the verification badge if approved
-                        userContent = `<span style="opacity: 0.4;">@${doc.user}</span>${verificationBadge}`;
+                        userContent = `<span style="opacity: 0.4;">@${doc.user}</span>${verificationBadges}`;
                     }
 
 
