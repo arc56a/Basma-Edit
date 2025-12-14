@@ -302,22 +302,6 @@
             color: #f5f5f5;
             text-shadow: none;
             opacity: 0.4;
-            display: flex; /* Add flexbox for alignment */
-            align-items: center; /* Vertically align items */
-            gap: 4px; /* Space between username and badge */
-        }
-
-        .phrase-user.admin {
-            color: var(--neon-blue); /* Neon blue for admin users */
-            opacity: 1;
-            text-shadow: 0 0 8px var(--neon-blue);
-        }
-
-        .admin-badge {
-            width: 14px;
-            height: 14px;
-            fill: #007bff; /* Blue fill for the badge */
-            flex-shrink: 0; /* Prevent badge from shrinking */
         }
 
         /* شرار نار */
@@ -570,33 +554,6 @@
         #showAddFormBtn:hover {
              background: rgba(0, 255, 255, 0.1);
              box-shadow: 0 0 16px rgba(0, 255, 255, 0.5);
-        }
-
-        .add-phrase-button-wrapper {
-            position: relative;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .locked-message {
-            position: absolute;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--neon-pink);
-            text-shadow: 0 0 8px rgba(255, 42, 109, 0.6);
-            z-index: 2; /* Ensure it's above the button */
-        }
-
-        .locked-message.hidden {
-            display: none;
-        }
-
-        #showAddFormBtn.locked {
-            opacity: 0.4; /* Make the button text transparent */
-            pointer-events: none; /* Disable interaction */
-            cursor: default;
         }
         
         #addPhraseForm {
@@ -884,10 +841,7 @@
 
         <div class="add-phrase-section">
             <div id="countdownTimer" style="display: none; text-align: center; margin-bottom: 15px; font-size: 1rem; color: var(--neon-pink);"></div>
-            <div class="add-phrase-button-wrapper">
-                <div id="lockedMessage" class="locked-message hidden">مغلق حاليا</div>
-                <button id="showAddFormBtn">إضافة عبارة جديدة</button>
-            </div>
+            <button id="showAddFormBtn">إضافة عبارة جديدة</button>
             <div id="addPhraseForm" class="hidden">
                 <div class="add-phrase-modal">
                     <h3 class="add-phrase-title">إضافة عبارة جديدة</h3>
@@ -928,7 +882,6 @@
             const DATABASE_ID = "693b73ab003790d00cf3";
             const PHRASES_COLLECTION_ID = "phrases_section"; // For settings and phrases
             const PHRASES_SETTINGS_COLLECTION_ID = "phrases_settings";
-            const CONTROL_PANEL_USERNAME = "Basma"; // Change this to your actual control panel username
 
             const { ID, Query, Client, Databases } = window.Appwrite;
             const client = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
@@ -949,8 +902,6 @@
             const previewPhraseText = document.getElementById('previewPhraseText');
             const previewPhraseUser = document.getElementById('previewPhraseUser');
             const previewPhraseCard = document.getElementById('previewPhraseCard');
-            const lockedMessage = document.getElementById('lockedMessage'); // New element
-            const originalShowFormBtnText = showFormBtn.textContent; // Store original text
 
             const sliderManager = {
                 slider: document.getElementById('phraseSlider'),
@@ -1035,22 +986,7 @@
                     newCard.className = 'phrase-card';
                     newCard.dataset.id = doc.$id;
 
-                    let userContent = '';
-                    let userClasses = 'phrase-user';
-                    let adminBadgeSvg = '';
-
-                    if (doc.user) {
-                        const isVerifiedUser = doc.isAdmin || (doc.user.toLowerCase() === CONTROL_PANEL_USERNAME.toLowerCase());
-                        if (isVerifiedUser) {
-                            userClasses += ' admin';
-                            adminBadgeSvg = '<svg class="admin-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
-                        }
-                        userContent = `@${doc.user}${adminBadgeSvg}`;
-                    }
-
-
-                    const userHTML = `<div class="${userClasses}">${userContent}</div>`;
-
+                    const userHTML = doc.user ? `<div class="phrase-user">@${doc.user}</div>` : '';
                     const textHTML = `<div class="phrase-text">${doc.text.replace(/\n/g, '<br>')}</div>`;
                     
                     const likedPhrases = JSON.parse(localStorage.getItem('likedPhrases') || '[]');
@@ -1069,7 +1005,8 @@
 
                     newCard.innerHTML = userHTML + textHTML + likeHTML;
                     this.slider.appendChild(newCard);
-                },                onTouchStart: function(e) { this.startX = e.touches[0].clientX; },
+                },
+                onTouchStart: function(e) { this.startX = e.touches[0].clientX; },
                 onTouchMove: function(e) {
                     if (this.startX === null) return;
                     const diff = e.touches[0].clientX - this.startX;
@@ -1167,11 +1104,7 @@
 
                     if (!endTime) {
                         countdownTimerEl.style.display = 'none';
-                        if (phraseSettings && phraseSettings.lockAddPhraseButton === true) {
-                            disableFormVisuals();
-                        } else {
-                            enableFormVisuals();
-                        }
+                        if (!showFormBtn.disabled) showFormBtn.style.display = 'block';
                         return;
                     }
 
@@ -1207,31 +1140,6 @@
                 showFormBtn.classList.toggle('hidden', show);
             };
 
-            const disableFormVisuals = (temporarilyHidden = false) => {
-                if (showFormBtn) {
-                    showFormBtn.disabled = true;
-                    showFormBtn.classList.add('locked');
-                    if (lockedMessage && !temporarilyHidden) { // Only show locked message if not temporarily hidden (e.g., by cooldown timer)
-                        lockedMessage.classList.remove('hidden');
-                    }
-                    if (temporarilyHidden) { // If temporarily hidden, hide the button completely
-                        showFormBtn.style.display = 'none';
-                    }
-                }
-            };
-
-            const enableFormVisuals = () => {
-                if (showFormBtn) {
-                    showFormBtn.disabled = false;
-                    showFormBtn.classList.remove('locked');
-                    showFormBtn.style.display = 'block'; // Ensure it's visible
-                    if (lockedMessage) {
-                        lockedMessage.classList.add('hidden');
-                    }
-                    showFormBtn.textContent = originalShowFormBtnText; // Restore original text
-                }
-            };
-
             const validateUser = (username) => {
                 newPhraseUser.classList.remove('input-error');
                 userError.textContent = '';
@@ -1257,16 +1165,8 @@
             newPhraseUser.addEventListener('input', () => {
                 validateUser(newPhraseUser.value.trim());
                 const username = newPhraseUser.value.trim();
-                previewPhraseUser.style.display = username.length > 0 ? 'flex' : 'none'; // Changed to flex for proper alignment with badge
-                
-                let userHtmlContent = `@${username}`;
-                if (username.toLowerCase() === CONTROL_PANEL_USERNAME.toLowerCase()) {
-                    previewPhraseUser.classList.add('admin');
-                    userHtmlContent += '<svg class="admin-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
-                } else {
-                    previewPhraseUser.classList.remove('admin');
-                }
-                previewPhraseUser.innerHTML = userHtmlContent; // Use innerHTML to render SVG
+                previewPhraseUser.style.display = username.length > 0 ? 'block' : 'none';
+                previewPhraseUser.textContent = `@${username}`;
             });
 
             newPhraseText.addEventListener('input', () => {
@@ -1333,8 +1233,7 @@
                             $id: 'default',
                             text: 'لا توجد عبارات حالياً. كن أول من يضيف واحدة!',
                             user: 'النظام',
-                            likes: 0,
-                            isAdmin: true
+                            likes: 0
                         });
                     }
                 } catch (error) {
@@ -1362,6 +1261,16 @@
 
             async function loadAndApplySettings() {
                 const addPhraseSectionEl = document.querySelector('.add-phrase-section');
+                const disableForm = (message) => {
+                    if(addPhraseSectionEl) {
+                        showFormBtn.disabled = true;
+                        showFormBtn.textContent = message;
+                        showFormBtn.style.cursor = 'not-allowed';
+                        showFormBtn.style.color = '#9ca3af';
+                        showFormBtn.style.borderColor = '#374151';
+                        showFormBtn.style.background = 'transparent';
+                    }
+                }
 
                 try {
                     const response = await databases.listDocuments(DATABASE_ID, PHRASES_SETTINGS_COLLECTION_ID, [
@@ -1380,81 +1289,18 @@
                              if (settings.showAddPhraseButton === false) {
                                 addPhraseSectionEl.remove();
                              } else if (settings.lockAddPhraseButton === true) {
-                                disableFormVisuals();
-                             } else {
-                                enableFormVisuals();
+                                disableForm('إضافة العبارات مقفلة حالياً');
                              }
                         }
                     } else {
                         console.error("No settings document found.");
-                        disableFormVisuals();
+                        disableForm('خطأ: لم يتم العثور على الإعدادات');
                     }
                 } catch (error) {
                     console.error("Failed to load settings:", error);
-                    disableFormVisuals();
+                    disableForm('خطأ: فشل تحميل الإعدادات');
                 }
-            } // End of loadAndApplySettings function
-
-            const cooldownManager = {
-                cooldownInterval: null,
-                startCooldown: function() {
-                    if (!phraseSettings || typeof phraseSettings.phraseRateLimit === 'undefined' || !phraseSettings.phraseRateLimitUnit) {
-                        console.error("Cannot start cooldown, settings are missing or incomplete.");
-                        return;
-                    }
-                    const cooldownMs = getCooldownMilliseconds(phraseSettings.phraseRateLimit, phraseSettings.phraseRateLimitUnit);
-                    if (cooldownMs <= 0) return;
-                    
-                    const endTime = new Date().getTime() + cooldownMs;
-                    localStorage.setItem('phraseCooldownEnd', endTime);
-                    this.checkAndApply();
-                },
-                updateDisplay: function(remainingTime) {
-                    const hours = Math.floor(remainingTime / (1000 * 60 * 60));
-                    const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
-                    countdownTimerEl.innerHTML = `يمكنك الإرسال مرة أخرى بعد: ${hours} س و ${minutes} د و ${seconds} ث`;
-                },
-                checkAndApply: function() {
-                    const endTime = localStorage.getItem('phraseCooldownEnd');
-                    if (this.cooldownInterval) clearInterval(this.cooldownInterval);
-
-                    if (!endTime) {
-                        countdownTimerEl.style.display = 'none';
-                        if (phraseSettings && phraseSettings.lockAddPhraseButton === true) {
-                            disableFormVisuals();
-                        } else {
-                            enableFormVisuals();
-                        }
-                        return;
-                    }
-
-                    const now = new Date().getTime();
-                    const remainingTime = endTime - now;
-
-                    if (remainingTime <= 0) {
-                        localStorage.removeItem('phraseCooldownEnd');
-                        this.checkAndApply();
-                    } else {
-                        showFormBtn.style.display = 'none'; // Hide the original button
-                        if (lockedMessage) lockedMessage.classList.add('hidden'); // Hide locked message
-                        addForm.classList.add('hidden'); // Hide the add phrase form
-                        countdownTimerEl.style.display = 'block'; // Show the countdown timer
-                        
-                        this.updateDisplay(remainingTime); // Update the display immediately
-                        this.cooldownInterval = setInterval(() => {
-                            const now = new Date().getTime();
-                            const remaining = endTime - now;
-                            if (remaining <= 0) {
-                                localStorage.removeItem('phraseCooldownEnd');
-                                this.checkAndApply();
-                            } else {
-                                this.updateDisplay(remaining);
-                            }
-                        }, 1000);
-                    }
-                }
-            }; // Closing brace for cooldownManager
+            }
 
             // --- Initialisation ---
             async function initializePage() {
@@ -1464,8 +1310,8 @@
                 cooldownManager.checkAndApply();
             }
 
-            initializePage(); // Call initializePage
-        }); // Closing brace for DOMContentLoaded
+            initializePage();
+        });
     </script>
 </body>
 </html>
