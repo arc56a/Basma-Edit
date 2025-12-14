@@ -638,6 +638,11 @@
         const mediaSliderContent = document.querySelector('#mainMediaSlider .media-slider-content');
         const mediaSliderFooter = document.querySelector('.media-slider-footer');
 
+        let songs = [];
+        let songIndex = 0;
+        let isPlaying = false;
+        let loopMode = 'one';
+
         const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
         const APPWRITE_PROJECT_ID = 'basmaedit56';
         const APPWRITE_DATABASE_ID = '693b73ab003790d00cf3';
