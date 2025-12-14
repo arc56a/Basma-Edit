@@ -1040,12 +1040,13 @@
                     let adminBadgeSvg = '';
 
                     if (doc.user) {
-                        const isVerifiedUser = doc.isAdmin || (doc.user.toLowerCase() === CONTROL_PANEL_USERNAME.toLowerCase());
-                        if (isVerifiedUser) {
-                            userClasses += ' admin';
-                            adminBadgeSvg = '<img src="images/verify.png" class="admin-badge" alt="Verified">';
+                        let verificationBadge = '';
+                        // If the phrase is approved, display a verification mark
+                        if (doc.is_approved) {
+                            verificationBadge = '<img src="images/verify.png" class="admin-badge" alt="Verified Phrase">';
                         }
-                        userContent = `<span style="opacity: 0.4;">@${doc.user}</span>${adminBadgeSvg}`;
+                        // Original user display, now including the verification badge if approved
+                        userContent = `<span style="opacity: 0.4;">@${doc.user}</span>${verificationBadge}`;
                     }
 
 
