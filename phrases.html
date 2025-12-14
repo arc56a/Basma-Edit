@@ -928,6 +928,7 @@
             const DATABASE_ID = "693b73ab003790d00cf3";
             const PHRASES_COLLECTION_ID = "phrases_section"; // For settings and phrases
             const PHRASES_SETTINGS_COLLECTION_ID = "phrases_settings";
+            const CONTROL_PANEL_USERNAME = "Basma"; // Change this to your actual control panel username
 
             const { ID, Query, Client, Databases } = window.Appwrite;
             const client = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
@@ -1039,12 +1040,14 @@
                     let adminBadgeSvg = '';
 
                     if (doc.user) {
-                        if (doc.isAdmin) {
+                        const isVerifiedUser = doc.isAdmin || (doc.user.toLowerCase() === CONTROL_PANEL_USERNAME.toLowerCase());
+                        if (isVerifiedUser) {
                             userClasses += ' admin';
                             adminBadgeSvg = '<svg class="admin-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
                         }
                         userContent = `@${doc.user}${adminBadgeSvg}`;
                     }
+
 
                     const userHTML = `<div class="${userClasses}">${userContent}</div>`;
 
@@ -1254,8 +1257,16 @@
             newPhraseUser.addEventListener('input', () => {
                 validateUser(newPhraseUser.value.trim());
                 const username = newPhraseUser.value.trim();
-                previewPhraseUser.style.display = username.length > 0 ? 'block' : 'none';
-                previewPhraseUser.textContent = `@${username}`;
+                previewPhraseUser.style.display = username.length > 0 ? 'flex' : 'none'; // Changed to flex for proper alignment with badge
+                
+                let userHtmlContent = `@${username}`;
+                if (username.toLowerCase() === CONTROL_PANEL_USERNAME.toLowerCase()) {
+                    previewPhraseUser.classList.add('admin');
+                    userHtmlContent += '<svg class="admin-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+                } else {
+                    previewPhraseUser.classList.remove('admin');
+                }
+                previewPhraseUser.innerHTML = userHtmlContent; // Use innerHTML to render SVG
             });
 
             newPhraseText.addEventListener('input', () => {
