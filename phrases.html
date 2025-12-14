@@ -301,20 +301,20 @@
             font-weight: 600;
             color: #f5f5f5;
             text-shadow: none;
-            opacity: 0.4;
+            /* opacity: 0.4; */
             display: flex; /* Add flexbox for alignment */
             align-items: center; /* Vertically align items */
             gap: 4px; /* Space between username and badge */
         }
 
-        .phrase-user.admin {
-            /* نفس لون وشفافية الاسم العادي، التمييز يكون فقط بعلامة التوثيق */
+        .phrase-user span { /* New rule for username text */
+            opacity: 0.4;
         }
 
         .admin-badge {
             width: 14px;
             height: 14px;
-            background: url('images/verify.png') center/contain no-repeat;
+            /* background: url('images/verify.png') center/contain no-repeat; */
             flex-shrink: 0; /* Prevent badge from shrinking */
             object-fit: contain;
             opacity: 1;
@@ -1043,9 +1043,9 @@
                         const isVerifiedUser = doc.isAdmin || (doc.user.toLowerCase() === CONTROL_PANEL_USERNAME.toLowerCase());
                         if (isVerifiedUser) {
                             userClasses += ' admin';
-                            adminBadgeSvg = '<svg class="admin-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+                            adminBadgeSvg = '<img src="images/verify.png" class="admin-badge" alt="Verified">';
                         }
-                        userContent = `@${doc.user}${adminBadgeSvg}`;
+                        userContent = `<span style="opacity: 0.4;">@${doc.user}</span>${adminBadgeSvg}`;
                     }
 
 
@@ -1276,10 +1276,10 @@
                 const username = newPhraseUser.value.trim();
                 previewPhraseUser.style.display = username.length > 0 ? 'flex' : 'none'; // Changed to flex for proper alignment with badge
                 
-                let userHtmlContent = `@${username}`;
+                let userHtmlContent = `<span style="opacity: 0.4;">@${username}</span>`;
                 if (username.toLowerCase() === CONTROL_PANEL_USERNAME.toLowerCase()) {
                     previewPhraseUser.classList.add('admin');
-                    userHtmlContent += '<svg class="admin-badge" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>';
+                    userHtmlContent += '<img src="images/verify.png" class="admin-badge" alt="Verified">';
                 } else {
                     previewPhraseUser.classList.remove('admin');
                 }
