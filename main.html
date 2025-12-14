@@ -642,6 +642,7 @@
         const APPWRITE_PROJECT_ID = 'basmaedit56';
         const APPWRITE_DATABASE_ID = '693b73ab003790d00cf3';
         const MAIN_SECTION_COLLECTION_ID = 'main_section';
+        const PHRASES_COLLECTION_ID = 'phrases_section'; // Added for phrases from the phrases collection
 
         let appwriteClient = null;
         let appwriteDatabases = null;
@@ -748,12 +749,9 @@
         }
 
         // سيتم تعبئة قائمة الأغاني لاحقاً من قاعدة البيانات (Appwrite أو غيره)
-        let songs = [];
-        let songIndex = 0;
-        let isPlaying = false;
-        let loopMode = 'one';
-        const homePhrases = [];
+        let homePhrases = []; // This array will store the fetched phrases
         let homePhraseIndex = 0;
+        let phraseRotationInterval; // To hold the interval ID
 
         function loadSong(song) {
             if (!song || !song.src) {
@@ -766,8 +764,7 @@
         }
 
         function rotateHomePhrase() {
-            if (!homePhraseStrip || !homePhraseText) return;
-            if (homePhraseStrip.classList.contains('hidden')) return;
+            if (!homePhraseStrip || !homePhraseText || homePhrases.length === 0) return; // Added check for empty homePhrases
 
             const card = homePhraseText.closest('.phrase-chip');
             if (!card) return;
@@ -786,6 +783,41 @@
             }, 620);
         }
 
+        async function loadPhrasesForMain() {
+            if (!appwriteDatabases) {
+                console.error('Appwrite Databases not initialized.');
+                homePhrases.push('خطأ: فشل تحميل العبارات.'); // Default error message
+                homePhraseText.textContent = homePhrases[0];
+                return;
+            }
+            try {
+                const response = await appwriteDatabases.listDocuments(
+                    APPWRITE_DATABASE_ID,
+                    PHRASES_COLLECTION_ID,
+                    [
+                        window.Appwrite.Query.equal('is_approved', true),
+                        window.Appwrite.Query.orderDesc('$createdAt'),
+                        window.Appwrite.Query.limit(100) // Limit to a reasonable number for rotation
+                    ]
+                );
+
+                if (response.documents.length > 0) {
+                    response.documents.forEach(doc => homePhrases.push(doc.text));
+                    homePhraseText.textContent = homePhrases[homePhraseIndex]; // Display the first phrase
+                    if (homePhrases.length > 1) { // Only start rotation if there's more than one phrase
+                        phraseRotationInterval = setInterval(rotateHomePhrase, 4000); // Start rotation
+                    }
+                } else {
+                    homePhrases.push('لا توجد عبارات متاحة حالياً.'); // Default message
+                    homePhraseText.textContent = homePhrases[0];
+                }
+            } catch (error) {
+                console.error('خطأ أثناء تحميل العبارات للرئيسية:', error);
+                homePhrases.push('خطأ: فشل تحميل العبارات.'); // Default error message
+                homePhraseText.textContent = homePhrases[0];
+            }
+        }
+        
         function playSong() {
             isPlaying = true;
             playPauseBtn.innerHTML = '⏸';
@@ -906,7 +938,7 @@
         }
 
         // محاولة تشغيل الموسيقى تلقائياً عند دخول الصفحة (قد يمنعه المتصفح حتى أول تفاعل)
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             try {
                 playSong();
             } catch (e) {
@@ -915,11 +947,11 @@
             if (homePhraseStrip && !musicPlayerEl.classList.contains('active')) {
                 homePhraseStrip.classList.remove('hidden');
             }
-            loadMainSettingsForHome();
+            await loadMainSettingsForHome(); // Await settings to ensure visibility is set before loading phrases
+            await loadPhrasesForMain(); // Call the new function to load phrases
         });
 
-        // تدوير عبارات الهوم كل 4 ثواني
-        setInterval(rotateHomePhrase, 4000);
+        // Removed: setInterval(rotateHomePhrase, 4000); // Will now be called inside loadPhrasesForMain
     </script>
 </body>
 </html>
