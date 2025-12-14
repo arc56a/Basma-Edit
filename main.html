@@ -682,6 +682,7 @@
 
                 if (response.total > 0) {
                     const doc = response.documents[0];
+                    console.log('Main settings document:', doc); // Log the fetched document
 
                     // زر مشغل الموسيقى
                     if (openPlayerBtn && openPlayerBtn.parentElement) {
@@ -698,6 +699,8 @@
                     // السلايدر والصورة/الفيديو والعنوان مأخوذة من نفس السجل
                     if (mainMediaSlider) {
                         const sliderVisible = typeof doc.slider_visible === 'boolean' ? doc.slider_visible : true;
+                        console.log('slider_visible from doc:', doc.slider_visible); // Log raw value
+                        console.log('calculated sliderVisible:', sliderVisible);     // Log calculated value
                         mainMediaSlider.style.display = sliderVisible ? 'block' : 'none';
                         if (mediaSliderFooter) {
                             mediaSliderFooter.style.display = sliderVisible ? 'block' : 'none';
@@ -732,7 +735,8 @@
                         }
                     }
                 } else {
-                    // في حال عدم وجود إعدادات، نظهر كل شيء افتراضيًا
+                    console.warn("No settings document found for main section. Defaulting to visible.");
+                    // In case no settings are found, default to visible
                     if (openPlayerBtn && openPlayerBtn.parentElement) {
                         openPlayerBtn.parentElement.style.display = 'flex';
                     }
@@ -745,6 +749,16 @@
                 }
             } catch (error) {
                 console.error('خطأ أثناء قراءة main_section في الرئيسية:', error);
+                // Ensure visibility is reset even on error
+                if (openPlayerBtn && openPlayerBtn.parentElement) {
+                    openPlayerBtn.parentElement.style.display = 'flex';
+                }
+                if (homePhraseStrip) {
+                    homePhraseStrip.style.display = 'block';
+                }
+                if (mainMediaSlider) {
+                    mainMediaSlider.style.display = 'block';
+                }
             }
         }
 
