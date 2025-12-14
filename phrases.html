@@ -882,7 +882,7 @@
             const APPWRITE_ENDPOINT = "https://fra.cloud.appwrite.io/v1";
             const APPWRITE_PROJECT_ID = "basmaedit56";
             const DATABASE_ID = "693b73ab003790d00cf3";
-            const PHRASES_COLLECTION_ID = "phrases"; // For settings and phrases
+            const PHRASES_COLLECTION_ID = "phrases_section"; // For settings and phrases
             const PHRASES_SETTINGS_COLLECTION_ID = "phrases_settings";
 
             const { ID, Query, Client, Databases } = window.Appwrite;
@@ -1083,7 +1083,13 @@
             const cooldownManager = {
                 cooldownInterval: null,
                 startCooldown: function() {
-                    const cooldownMs = phraseSettings ? getCooldownMilliseconds(phraseSettings.phraseRateLimit, phraseSettings.phraseRateLimitUnit) : 24 * 60 * 60 * 1000;
+                    if (!phraseSettings || typeof phraseSettings.phraseRateLimit === 'undefined' || !phraseSettings.phraseRateLimitUnit) {
+                        console.error("Cannot start cooldown, settings are missing or incomplete.");
+                        return;
+                    }
+                    const cooldownMs = getCooldownMilliseconds(phraseSettings.phraseRateLimit, phraseSettings.phraseRateLimitUnit);
+                    if (cooldownMs <= 0) return;
+                    
                     const endTime = new Date().getTime() + cooldownMs;
                     localStorage.setItem('phraseCooldownEnd', endTime);
                     this.checkAndApply();
@@ -1244,17 +1250,30 @@
             }
 
             function getCooldownMilliseconds(value, unit) {
-                if (!value || !unit) return 24 * 60 * 60 * 1000;
                 const val = parseInt(value, 10);
+                if (isNaN(val) || val <= 0) return 0;
+                
                 switch (unit) {
                     case 'minutes': return val * 60 * 1000;
                     case 'hours': return val * 60 * 60 * 1000;
                     case 'days': return val * 24 * 60 * 60 * 1000;
-                    default: return 24 * 60 * 60 * 1000;
+                    default: return 0;
                 }
             }
 
             async function loadAndApplySettings() {
+                const addPhraseSectionEl = document.querySelector('.add-phrase-section');
+                const disableForm = (message) => {
+                    if(addPhraseSectionEl) {
+                        showFormBtn.disabled = true;
+                        showFormBtn.textContent = message;
+                        showFormBtn.style.cursor = 'not-allowed';
+                        showFormBtn.style.color = '#9ca3af';
+                        showFormBtn.style.borderColor = '#374151';
+                        showFormBtn.style.background = 'transparent';
+                    }
+                }
+
                 try {
                     const response = await databases.listDocuments(DATABASE_ID, PHRASES_SETTINGS_COLLECTION_ID, [
                         Query.limit(1)
@@ -1264,8 +1283,7 @@
                         phraseSettings = settings;
 
                         const phrasesSectionEl = document.querySelector('.phrases-section');
-                        const addPhraseSectionEl = document.querySelector('.add-phrase-section');
-
+                        
                         if (settings.photographyMode === false) document.getElementById('cameraBtn')?.remove();
                         if (settings.showPhraseCards === false) phrasesSectionEl?.remove();
                         
@@ -1273,12 +1291,7 @@
                              if (settings.showAddPhraseButton === false) {
                                 addPhraseSectionEl.remove();
                              } else if (settings.lockAddPhraseButton === true) {
-                                showFormBtn.disabled = true;
-                                showFormBtn.textContent = 'إضافة العبارات مقفلة حالياً';
-                                showFormBtn.style.cursor = 'not-allowed';
-                                showFormBtn.style.color = '#9ca3af';
-                                showFormBtn.style.borderColor = '#374151';
-                                showFormBtn.style.background = 'transparent';
+                                disableForm('إضافة العبارات مقفلة حالياً');
                              }
                         }
 
@@ -1287,9 +1300,13 @@
                              const unitText = { minutes: 'دقائق', hours: 'ساعات', days: 'أيام' }[settings.phraseRateLimitUnit] || 'فترة';
                              cooldownTextP.textContent = `يحق لكل شخص نشر عبارة واحدة كل ${settings.phraseRateLimit} ${unitText}.`;
                         }
+                    } else {
+                        console.error("No settings document found.");
+                        disableForm('خطأ: لم يتم العثور على الإعدادات');
                     }
                 } catch (error) {
                     console.error("Failed to load settings:", error);
+                    disableForm('خطأ: فشل تحميل الإعدادات');
                 }
             }
 
