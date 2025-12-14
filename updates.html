@@ -300,36 +300,58 @@
 
         <h1 class="page-title">آخر التحديثات</h1>
 
-        <div class="updates-container">
+        <div class="updates-container" id="updates-list-container">
             <!-- سيتم إضافة التحديثات هنا بشكل ديناميكي -->
-            <div class="update-item">
-                <div class="update-header">
-                    <span class="update-title">تحديث تجريبي</span>
-                    <span class="update-date">11 ديسمبر 2025</span>
-                </div>
-                <div class="update-body">
-                    <p>هذا مثال لتحديث جديد سيظهر للمستخدمين. يمكن أن يحتوي على نصوص وصور وروابط.</p>
-                </div>
-            </div>
-            <div class="update-item">
-                <div class="update-header">
-                    <span class="update-title">إطلاق ميزة جديدة</span>
-                    <span class="update-date">10 ديسمبر 2025</span>
-                </div>
-                <div class="update-body">
-                    <p>يسعدنا أن نعلن عن إطلاق ميزة العبارات الجديدة في التطبيق. استمتعوا بها وشاركونا آراءكم!</p>
-                </div>
-            </div>
-             <div class="update-item">
-                <div class="update-header">
-                    <span class="update-title">تحسينات في الأداء</span>
-                    <span class="update-date">9 ديسمبر 2025</span>
-                </div>
-                <div class="update-body">
-                    <p>تم إجراء بعض التحسينات على سرعة استجابة التطبيق وتصحيح بعض الأخطاء الصغيرة.</p>
-                </div>
-            </div>
         </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script>
+        const APPWRITE_ENDPOINT = "https://fra.cloud.appwrite.io/v1";
+        const APPWRITE_PROJECT_ID = "basmaedit56";
+        const DATABASE_ID = "693b73ab003790d00cf3";
+        const UPDATES_COLLECTION_ID = "updates_section";
+
+        const { Query, Client, Databases } = window.Appwrite;
+        const client = new Client().setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
+        const databases = new Databases(client);
+
+        const updatesListContainer = document.getElementById('updates-list-container');
+
+        const loadUpdates = async () => {
+            updatesListContainer.innerHTML = '<p style="text-align: center; color: #a0a0a0;">جارٍ تحميل التحديثات...</p>';
+            try {
+                const response = await databases.listDocuments(DATABASE_ID, UPDATES_COLLECTION_ID, [Query.orderDesc('timestamp')]);
+                
+                if (response.documents.length === 0) {
+                    updatesListContainer.innerHTML = '<p style="text-align: center; color: #a0a0a0;">لا توجد تحديثات حاليًا.</p>';
+                    return;
+                }
+
+                updatesListContainer.innerHTML = ''; // Clear loading message
+                response.documents.forEach(doc => {
+                    const updateItem = document.createElement('div');
+                    updateItem.className = 'update-item';
+                    updateItem.innerHTML = `
+                        <div class="update-header">
+                            <span class="update-title">${doc.title || 'لا يوجد عنوان'}</span>
+                            <span class="update-date">${doc.date || ''}</span>
+                        </div>
+                        <div class="update-body">
+                            <p>${doc.message || 'لا يوجد محتوى'}</p>
+                            ${doc.link ? `<p><a href="${doc.link}" target="_blank" style="color: var(--neon-blue); text-decoration: none;">المزيد...</a></p>` : ''}
+                        </div>
+                    `;
+                    updatesListContainer.appendChild(updateItem);
+                });
+
+            } catch (error) {
+                console.error('Failed to load updates:', error);
+                updatesListContainer.innerHTML = '<p style="text-align: center; color: red;">حدث خطأ أثناء تحميل التحديثات.</p>';
+            }
+        };
+
+        window.addEventListener('load', loadUpdates);
+    </script>
     </div>
 </body>
 </html>
